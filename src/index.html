@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What's really in Australian's shopping trolley?</title>
+<meta name="description" content="A Vega-Lite data story about nutrition, ingredients and Health Star Ratings in packaged food sold in Australia.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+<style>
+  /* design tokens, layout shell, typography, page regions — unchanged from before */
+  :root{ --ink:#1b1b1f; --ink-soft:#4a4a52; --paper:#faf7f2; --paper-dim:#f1ece3; --line:#ddd4c6; --accent:#c6572a; --accent-dim:#e7d9ca; --max-w:1180px; }
+  *{ box-sizing: border-box; }
+  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Inter',system-ui,sans-serif; font-size:16px; line-height:1.55; overflow-x:hidden; }
+  .wrap{ width:100%; max-width:var(--max-w); margin:0 auto; padding:0 clamp(16px,4vw,48px); }
+
+  h1,h2,h3 { 
+    font-family:'Fraunces',Georgia,serif;
+    font-weight:600;
+    line-height:1.15;
+    margin:0 0 .4em;}
+  h1 { 
+    font-size:clamp(2rem,5vw,3.4rem); 
+    font-weight:500; }
+  h2 { 
+    font-size:clamp(1.4rem,3vw,2rem); }
+  
+  p{ margin:0 0 1em; max-width:68ch; }
+  .lede{ font-size:1.15rem; color:var(--ink-soft); max-width:60ch; }
+  .eyebrow{ font-size:.8rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:.6em; display:block; }
+  .stat{ font-family:'Fraunces',serif; font-weight:500; color:var(--accent); }
+  header.hero{ background:linear-gradient(180deg,var(--paper-dim),var(--paper)); border-bottom:1px solid var(--line); padding:clamp(48px,9vw,96px) 0 clamp(32px,6vw,56px); }
+  section.chapter{ padding:clamp(40px,7vw,72px) 0; border-bottom:1px solid var(--line); }
+  .chart-card{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:clamp(12px,3vw,28px); margin:1.2em 0; overflow-x:auto; }
+  .chart-caption{ font-size:.9rem; color:var(--ink-soft); margin-top:.6em; }
+  footer{ padding:40px 0 64px; color:var(--ink-soft); font-size:.85rem; }
+</style>
+
+
+</head>
+<body>
+    <!-- Title + subtitle -->
+    <header class="hero">
+        <div class="wrap">
+            <h1> Packaged Foods Nutrition Sold in Australian Supermarkets</h1>
+            <span class="eyebrow">A look at the nutritional information for packaged foods sold in Australian supermarket. Does the Health Star Rating on the box tells the whole story?</span>
+        </div>
+    </header>
+
+    <main class="wrap">
+
+    <!-- Story 1 :  -->
+    <section class="chapter" id="chapter-trolley-overview">
+        <div class="chapter-head">
+            <span class="eyebrow">Chapter 1: What's really in Australian's shopping trolley?</span>
+            <h2> What's really in Australia's shopping trolley?</h2>
+        </div>
+        
+        <div class="chart-card">
+            <div id="chart-trolley-overview"></div>
+        </div>
+    </section>
+
+    <!-- Story 2 — sugar vs HSR (jitter plot) -->
+
+
+    <!-- Story 3 — mean HSR by category (lollipop chart) -->
+
+    </main>
+
+    <script>
+        vegaEmbed('#chart-trolley-overview', 'specs/trolley_overview_waffle.json', { actions: false });
+        vegaEmbed('#chart-hsr-sugar', 'specs/hsr_vs_sugar_jitter.json', { actions: false });
+        vegaEmbed('#chart-hsr-by-category', 'specs/hsr_by_category.json', { actions: false });
+    </script>
+</body>
+</html>
