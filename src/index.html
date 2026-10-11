@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What's really in Australian's shopping trolley?</title>
+<title>What's really in Australia's shopping trolley?</title>
 <meta name="description" content="A Vega-Lite data story about nutrition, ingredients and Health Star Ratings in packaged food sold in Australia.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,109 +15,222 @@
 <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 
 <style>
-  /* design tokens, layout shell, typography, page regions — unchanged from before */
   :root{ --ink:#1b1b1f; --ink-soft:#4a4a52; --paper:#faf7f2; --paper-dim:#f1ece3; --line:#ddd4c6; --accent:#c6572a; --accent-dim:#e7d9ca; --max-w:1180px; }
   *{ box-sizing: border-box; }
   body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Inter',system-ui,sans-serif; font-size:16px; line-height:1.55; overflow-x:hidden; }
   .wrap{ width:100%; max-width:var(--max-w); margin:0 auto; padding:0 clamp(16px,4vw,48px); }
 
-  h1,h2,h3 { 
+  h1,h2,h3 {
     font-family:'Fraunces',Georgia,serif;
     font-weight:600;
     line-height:1.15;
     margin:0 0 .4em;}
-  h1 { 
-    font-size:clamp(2rem,5vw,3.4rem); 
+  h1 {
+    font-size:clamp(2rem,5vw,3.4rem);
     font-weight:500; }
-  h2 { 
+  h2 {
     font-size:clamp(1.4rem,3vw,2rem); }
-  
+  h3 {
+    font-size:1rem;
+    font-weight:600;
+    font-family:'Inter',sans-serif; }
+
   p{ margin:0 0 1em; max-width:68ch; }
   .lede{ font-size:1.15rem; color:var(--ink-soft); max-width:60ch; }
   .eyebrow{ font-size:.8rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:.6em; display:block; }
   .stat{ font-family:'Fraunces',serif; font-weight:500; color:var(--accent); }
   header.hero{ background:linear-gradient(180deg,var(--paper-dim),var(--paper)); border-bottom:1px solid var(--line); padding:clamp(48px,9vw,96px) 0 clamp(32px,6vw,56px); }
   section.chapter{ padding:clamp(40px,7vw,72px) 0; border-bottom:1px solid var(--line); }
-  .chart-card{ background:#fff; border:1px solid var(--line); border-radius:10px; padding:clamp(12px,3vw,28px); margin:1.2em 0; overflow-x:auto; }
-  .chart-caption{ font-size:.9rem; color:var(--ink-soft); margin-top:.6em; }
+
+  /* grid for 1/2/3 charts under one heading; set data-cols on .chart-row.
+     always collapses to 1 column under 720px, so no horizontal scroll */
+  .chart-row{
+    display: grid;
+    grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
+    gap: clamp(14px, 2.5vw, 24px);
+  }
+  .chart-row[data-cols="2"]{ --cols: 2; }
+  .chart-row[data-cols="3"]{ --cols: 3; }
+  @media (max-width: 720px){ .chart-row{ --cols: 1 !important; } }
+
+  .chart-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:clamp(12px,3vw,24px);
+    overflow-x:auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .chart-card h3{ margin-bottom:.5em; }
+  .chart-caption{ font-size:.85rem; color:var(--ink-soft); margin-top:.6em; }
+
   footer{ padding:40px 0 64px; color:var(--ink-soft); font-size:.85rem; }
 </style>
-
-
 </head>
 <body>
-    <!-- Title + subtitle -->
     <header class="hero">
         <div class="wrap">
-            <h1> Packaged Foods Nutrition Sold in Australian Supermarkets</h1>
-            <span class="eyebrow">A look at the nutritional information for packaged foods sold in Australian supermarket. Does the Health Star Rating on the box tells the whole story?</span>
+            <h1>Packaged Foods Nutrition Sold in Australian Supermarkets</h1>
+            <span class="eyebrow">What 246 real supermarket products say about nutrition, ingredients and the Health Star Rating on the box</span>
         </div>
     </header>
 
     <main class="wrap">
 
-    <!-- Story 1 :  -->
+    <!-- Chapter 1: solo chart, full width -->
     <section class="chapter" id="chapter-trolley-overview">
         <div class="chapter-head">
-            <span class="eyebrow">Chapter 1: What's really in Australian's shopping trolley?</span>
-            <h2> What's really in Australia's shopping trolley?</h2>
+            <span class="eyebrow">Chapter 1</span>
+            <h2>What's in the trolley</h2>
         </div>
-        
-        <div class="chart-card">
-            <div id="chart-trolley-overview"></div>
+        <p class="lede">Meat, frozen meals and cereal dominate the sample of 246 products pulled from supermarket shelves. Each square below is one product, not an estimate.</p>
+
+        <div class="chart-row" data-cols="1">
+            <div class="chart-card">
+                <div id="chart-trolley-overview"></div>
+
+
+                <p class="chart-caption">Waffle chart: each square is one product, grouped by category.</p>
+            </div>
         </div>
     </section>
 
-    <!-- Story 2 — sugar vs HSR (jitter plot), mean HSR by category -->
-    <section class="chapter" id="chapter-hsr-sugar">
+    <!-- Chapter 2: 2-up row, one heading shared by both charts -->
+    <section class="chapter" id="chapter-reading-the-stars">
         <div class="chapter-head">
-            <span class="eyebrow">Chapter 2: Reading the stars</span>
-            <h2>Does a higher star rating actually mean less sugar?</h2>
+            <span class="eyebrow">Chapter 2</span>
+            <h2>Reading the stars</h2>
         </div>
-        <div class="chart-card">
-            <div id="chart-hsr-sugar"></div>
+        <p class="lede">A 5-star rating is meant to signal a healthier product, but the two charts below test that against the actual numbers.</p>
+
+        <div class="chart-row" data-cols="2">
+            <div class="chart-card">
+                <h3>Higher rating, less sugar?</h3>
+                <div id="chart-hsr-sugar"></div>
+                
+
+                <p class="chart-caption">Sugar (g per 100g) plotted against Health Star Rating. Each dot is one product.</p>
+            </div>
+            <div class="chart-card">
+                <h3>Some categories start behind</h3>
+                <div id="chart-hsr-by-category"></div>
+
+
+                <p class="chart-caption">Mean Health Star Rating per food category.</p>
+            </div>
         </div>
     </section>
 
-    <!-- Story 3 — Sodium vs HSR, Protein vs HSR-->
-    <section class="chapter" id="chapter-hsr-sodium-protein">
+    <!-- Chapter 3: 2-up row — sodium vs HSR, protein vs HSR -->
+    <section class="chapter" id="chapter-whats-in-it">
         <div class="chapter-head">
-            <span class="eyebrow">Chapter 3: What’s actually in it?</span>
-            <h2>How does sodium content relate to Health Star Ratings?</h2>
+            <span class="eyebrow">Chapter 3</span>
+            <h2>What's actually in it</h2>
         </div>
-        <div class="chart-card">
-            <div id="chart-hsr-sodium"></div>
-            <div id="chart-hsr-protein"></div>
+        <p class="lede">Sugar isn't the only thing a star rating weighs. Sodium pulls it down, protein pushes it up.</p>
+
+        <div class="chart-row" data-cols="2">
+            <div class="chart-card">
+                <h3>Sodium vs Health Star Rating</h3>
+                <div id="chart-hsr-sodium"></div>
+
+
+                <p class="chart-caption">Sodium (mg per 100g) by Health Star Rating.</p>
+            </div>
+            <div class="chart-card">
+                <h3>Protein vs Health Star Rating</h3>
+                <div id="chart-hsr-protein"></div>
+
+
+                <p class="chart-caption">Protein (g per 100g) by Health Star Rating.</p>
+            </div>
         </div>
     </section>
 
-    <!-- Story 4 — Ingredient-count by category · Allergen frequency  -->
-    <section class="chapter" id="chapter-ingredient-allergen">
+    <!-- Chapter 4: 2-up row — ingredient count by category, allergen frequency -->
+    <section class="chapter" id="chapter-ingredients-processing">
         <div class="chapter-head">
-            <span class="eyebrow">Chapter 4: Ingredients & processing</span>
-            <h2>How many ingredients are in each food category?</h2>
+            <span class="eyebrow">Chapter 4</span>
+            <h2>Ingredients & processing</h2>
         </div>
-        <div class="chart-card">
-            <div id="chart-hsr-ingredient"></div>
+        <p class="lede">A longer ingredient list usually means more processing. Here's how that stacks up by category, and which allergens turn up most.</p>
+
+        <div class="chart-row" data-cols="2">
+            <div class="chart-card">
+                <h3>Ingredient count by category</h3>
+                <div id="chart-ingredient-count"></div>
+
+
+                <p class="chart-caption">Number of listed ingredients per product, grouped by food category.</p>
+            </div>
+           
+            <div class="chart-card">
+                <h3>Allergen frequency</h3>
+                <div id="chart-allergen-frequency"></div>
+
+
+                <p class="chart-caption">How often each common allergen appears.</p>
+            </div>
         </div>
     </section>
 
-    <!-- Story 5 — Ingredient-count by category · Allergen frequency  -->
-    <section class="chapter" id="chapter-5">
+    <!-- Chapter 5: 3 required map idiom -->
+    <section class="chapter" id="chapter-geography">
         <div class="chapter-head">
-            <span class="eyebrow">Chapter 5: Does geography change the picture?</span>
-            <h2>How many ingredients are in each food category?</h2>
+            <span class="eyebrow">Chapter 5</span>
+            <h2>Does geography change the picture?</h2>
         </div>
-        <div class="chart-card">
-            <div id="chart-hsr-ingredient"></div>
+        <p class="lede">Diet-related health risk isn't even across Australia. These three maps look at the same ABS data three different ways.</p>
+
+        <div class="chart-row" data-cols="3">
+            <div class="chart-card">
+                <h3>Choropleth</h3>
+                <div id="chart-map-choropleth"></div>
+
+
+                <p class="chart-caption"></p>
+            </div>
+            <div class="chart-card">
+                <h3>Proportional symbol</h3>
+                <div id="chart-map-proportional-symbol"></div>
+
+
+                <p class="chart-caption"></p>
+            </div>
+
+            <div class="chart-card">
+                <h3>Tile grid</h3>
+                <div id="chart-map-tile-grid"></div>
+
+
+                <p class="chart-caption"></p>
+            </div>
         </div>
     </section>
+
     </main>
 
+    <footer>
+        <div class="wrap">
+            <p>Sources and full citations: see <code>docs/sources.md</code> in this repository.</p>
+        </div>
+    </footer>
+
     <script>
+        // Chapter 1-2: specs exist, wired up
         vegaEmbed('#chart-trolley-overview', 'specs/trolley_overview_waffle.json', { actions: false });
         vegaEmbed('#chart-hsr-sugar', 'specs/hsr_vs_sugar_jitter.json', { actions: false });
         vegaEmbed('#chart-hsr-by-category', 'specs/hsr_by_category.json', { actions: false });
+
+        // Chapter 3-5: divs are in place, uncomment each line once its spec is built
+        // vegaEmbed('#chart-hsr-sodium', 'specs/hsr_vs_sodium.json', { actions: false });
+        // vegaEmbed('#chart-hsr-protein', 'specs/hsr_vs_protein.json', { actions: false });
+        // vegaEmbed('#chart-ingredient-count', 'specs/ingredient_count_by_category.json', { actions: false });
+        // vegaEmbed('#chart-allergen-frequency', 'specs/allergen_frequency.json', { actions: false });
+        // vegaEmbed('#chart-map-choropleth', 'specs/map_choropleth.json', { actions: false });
+        // vegaEmbed('#chart-map-proportional-symbol', 'specs/map_proportional_symbol.json', { actions: false });
+        // vegaEmbed('#chart-map-tile-grid', 'specs/map_tile_grid.json', { actions: false });
     </script>
 </body>
 </html>
