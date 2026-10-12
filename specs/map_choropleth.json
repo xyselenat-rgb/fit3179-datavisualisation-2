@@ -1,0 +1,143 @@
+{
+ "description": "Choropleth: state fill by value.",
+ "width": "container",
+ "height": 340,
+ "autosize": {
+  "type": "fit-x",
+  "contains": "padding"
+ },
+ "datasets": {
+  "abs": []
+ },
+ "projection": {
+  "type": "conicEqualArea",
+  "parallels": [
+   -18,
+   -36
+  ],
+  "rotate": [
+   -134,
+   0,
+   0
+  ]
+ },
+ "layer": [
+  {
+   "data": {
+    "url": "../dataset/australia_states.topojson",
+    "format": {
+     "type": "topojson",
+     "feature": "states"
+    }
+   },
+   "mark": {
+    "type": "geoshape",
+    "fill": "#F2F2EA",
+    "stroke": "#111111",
+    "strokeWidth": 1
+   }
+  },
+  {
+   "data": {
+    "name": "abs"
+   },
+   "transform": [
+    {
+     "lookup": "state",
+     "from": {
+      "data": {
+       "url": "../dataset/australia_states.topojson",
+       "format": {
+        "type": "topojson",
+        "feature": "states"
+       }
+      },
+      "key": "properties.code"
+     },
+     "as": "geo"
+    }
+   ],
+   "mark": {
+    "type": "geoshape",
+    "stroke": "#111111",
+    "strokeWidth": 1.5
+   },
+   "encoding": {
+    "shape": {
+     "field": "geo",
+     "type": "geojson"
+    },
+    "color": {
+     "field": "value",
+     "type": "quantitative",
+     "scale": {
+      "range": [
+       "#FFE3EA",
+       "#8B1038"
+      ],
+      "interpolate": "lab",
+      "zero": false
+     },
+     "legend": null
+    },
+    "tooltip": [
+     {
+      "field": "state",
+      "title": "State"
+     },
+     {
+      "field": "value",
+      "title": "% of adults",
+      "format": ".1f"
+     }
+    ]
+   }
+  }
+ ],
+ "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+ "config": {
+  "font": "Archivo",
+  "background": null,
+  "view": {
+   "stroke": null
+  },
+  "axis": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111",
+   "domainColor": "#111111",
+   "tickColor": "#111111",
+   "gridColor": "#00000014",
+   "domainWidth": 2,
+   "tickWidth": 2
+  },
+  "legend": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111"
+  },
+  "header": {
+   "labelFont": "Archivo",
+   "labelFontWeight": 800,
+   "labelFontSize": 13,
+   "titleFontSize": 0,
+   "labelColor": "#111111",
+   "labelAnchor": "start",
+   "labelPadding": 6
+  }
+ },
+ "padding": {
+  "left": 4,
+  "right": 18,
+  "top": 6,
+  "bottom": 4
+ }
+}

@@ -1,0 +1,272 @@
+{
+ "description": "Proportional symbols: circle area by value on a plain base map.",
+ "width": "container",
+ "height": 340,
+ "autosize": {
+  "type": "fit-x",
+  "contains": "padding"
+ },
+ "datasets": {
+  "abs": []
+ },
+ "projection": {
+  "type": "conicEqualArea",
+  "parallels": [
+   -18,
+   -36
+  ],
+  "rotate": [
+   -134,
+   0,
+   0
+  ]
+ },
+ "layer": [
+  {
+   "data": {
+    "url": "../dataset/australia_states.topojson",
+    "format": {
+     "type": "topojson",
+     "feature": "states"
+    }
+   },
+   "mark": {
+    "type": "geoshape",
+    "fill": "#F2F2EA",
+    "stroke": "#111111",
+    "strokeWidth": 1
+   }
+  },
+  {
+   "data": {
+    "name": "abs"
+   },
+   "transform": [
+    {
+     "lookup": "code",
+     "from": {
+      "data": {
+       "values": [
+        {
+         "code": "NSW",
+         "lon": 146.9,
+         "lat": -32.2
+        },
+        {
+         "code": "VIC",
+         "lon": 144.6,
+         "lat": -37.0
+        },
+        {
+         "code": "QLD",
+         "lon": 144.5,
+         "lat": -22.5
+        },
+        {
+         "code": "SA",
+         "lon": 135.5,
+         "lat": -30.0
+        },
+        {
+         "code": "WA",
+         "lon": 122.0,
+         "lat": -25.5
+        },
+        {
+         "code": "TAS",
+         "lon": 146.6,
+         "lat": -42.0
+        },
+        {
+         "code": "NT",
+         "lon": 133.4,
+         "lat": -19.4
+        },
+        {
+         "code": "ACT",
+         "lon": 152.6,
+         "lat": -35.9
+        }
+       ]
+      },
+      "key": "code",
+      "fields": [
+       "lon",
+       "lat"
+      ]
+     }
+    }
+   ],
+   "mark": {
+    "type": "circle",
+    "fill": "#E0245E",
+    "fillOpacity": 0.85,
+    "stroke": "#111111",
+    "strokeWidth": 2
+   },
+   "encoding": {
+    "longitude": {
+     "field": "lon",
+     "type": "quantitative"
+    },
+    "latitude": {
+     "field": "lat",
+     "type": "quantitative"
+    },
+    "size": {
+     "field": "value",
+     "type": "quantitative",
+     "scale": {
+      "type": "sqrt",
+      "zero": true,
+      "range": [
+       0,
+       1500
+      ]
+     },
+     "legend": null
+    },
+    "tooltip": [
+     {
+      "field": "state",
+      "title": "State"
+     },
+     {
+      "field": "value",
+      "title": "% of adults",
+      "format": ".1f"
+     }
+    ]
+   }
+  },
+  {
+   "data": {
+    "name": "abs"
+   },
+   "transform": [
+    {
+     "lookup": "code",
+     "from": {
+      "data": {
+       "values": [
+        {
+         "code": "NSW",
+         "lon": 146.9,
+         "lat": -32.2
+        },
+        {
+         "code": "VIC",
+         "lon": 144.6,
+         "lat": -37.0
+        },
+        {
+         "code": "QLD",
+         "lon": 144.5,
+         "lat": -22.5
+        },
+        {
+         "code": "SA",
+         "lon": 135.5,
+         "lat": -30.0
+        },
+        {
+         "code": "WA",
+         "lon": 122.0,
+         "lat": -25.5
+        },
+        {
+         "code": "TAS",
+         "lon": 146.6,
+         "lat": -42.0
+        },
+        {
+         "code": "NT",
+         "lon": 133.4,
+         "lat": -19.4
+        },
+        {
+         "code": "ACT",
+         "lon": 152.6,
+         "lat": -35.9
+        }
+       ]
+      },
+      "key": "code",
+      "fields": [
+       "lon",
+       "lat"
+      ]
+     }
+    }
+   ],
+   "mark": {
+    "type": "text",
+    "font": "Archivo",
+    "fontWeight": 800,
+    "fontSize": 10,
+    "dy": -1
+   },
+   "encoding": {
+    "longitude": {
+     "field": "lon",
+     "type": "quantitative"
+    },
+    "latitude": {
+     "field": "lat",
+     "type": "quantitative"
+    },
+    "text": {
+     "field": "value",
+     "type": "quantitative",
+     "format": ".0f"
+    }
+   }
+  }
+ ],
+ "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+ "config": {
+  "font": "Archivo",
+  "background": null,
+  "view": {
+   "stroke": null
+  },
+  "axis": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111",
+   "domainColor": "#111111",
+   "tickColor": "#111111",
+   "gridColor": "#00000014",
+   "domainWidth": 2,
+   "tickWidth": 2
+  },
+  "legend": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111"
+  },
+  "header": {
+   "labelFont": "Archivo",
+   "labelFontWeight": 800,
+   "labelFontSize": 13,
+   "titleFontSize": 0,
+   "labelColor": "#111111",
+   "labelAnchor": "start",
+   "labelPadding": 6
+  }
+ },
+ "padding": {
+  "left": 4,
+  "right": 18,
+  "top": 6,
+  "bottom": 4
+ }
+}

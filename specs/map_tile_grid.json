@@ -1,0 +1,244 @@
+{
+ "description": "Tile grid map: one equal square per state, roughly in place.",
+ "data": {
+  "name": "abs"
+ },
+ "datasets": {
+  "abs": []
+ },
+ "transform": [
+  {
+   "lookup": "code",
+   "from": {
+    "data": {
+     "values": [
+      {
+       "code": "NT",
+       "x": 1,
+       "y": 0
+      },
+      {
+       "code": "QLD",
+       "x": 2,
+       "y": 0
+      },
+      {
+       "code": "WA",
+       "x": 0,
+       "y": 1
+      },
+      {
+       "code": "SA",
+       "x": 1,
+       "y": 1
+      },
+      {
+       "code": "NSW",
+       "x": 2,
+       "y": 1
+      },
+      {
+       "code": "ACT",
+       "x": 3,
+       "y": 1
+      },
+      {
+       "code": "VIC",
+       "x": 2,
+       "y": 2
+      },
+      {
+       "code": "TAS",
+       "x": 2,
+       "y": 3
+      }
+     ]
+    },
+    "key": "code",
+    "fields": [
+     "x",
+     "y"
+    ]
+   }
+  },
+  {
+   "joinaggregate": [
+    {
+     "op": "min",
+     "field": "value",
+     "as": "lo"
+    },
+    {
+     "op": "max",
+     "field": "value",
+     "as": "hi"
+    }
+   ]
+  },
+  {
+   "calculate": "(datum.value - datum.lo) / max(datum.hi - datum.lo, 0.0001)",
+   "as": "t"
+  }
+ ],
+ "width": "container",
+ "height": 340,
+ "autosize": {
+  "type": "fit-x",
+  "contains": "padding"
+ },
+ "encoding": {
+  "x": {
+   "field": "x",
+   "type": "ordinal",
+   "axis": null,
+   "scale": {
+    "domain": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "paddingInner": 0.06
+   }
+  },
+  "y": {
+   "field": "y",
+   "type": "ordinal",
+   "axis": null,
+   "scale": {
+    "domain": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "paddingInner": 0.06
+   }
+  }
+ },
+ "layer": [
+  {
+   "mark": {
+    "type": "rect",
+    "stroke": "#111111",
+    "strokeWidth": 2.5
+   },
+   "encoding": {
+    "color": {
+     "field": "value",
+     "type": "quantitative",
+     "scale": {
+      "range": [
+       "#FFE3EA",
+       "#8B1038"
+      ],
+      "interpolate": "lab",
+      "zero": false
+     },
+     "legend": null
+    },
+    "tooltip": [
+     {
+      "field": "state",
+      "title": "State"
+     },
+     {
+      "field": "value",
+      "title": "% of adults",
+      "format": ".1f"
+     }
+    ]
+   }
+  },
+  {
+   "mark": {
+    "type": "text",
+    "font": "Archivo",
+    "fontWeight": 900,
+    "fontSize": 15,
+    "dy": -8
+   },
+   "encoding": {
+    "text": {
+     "field": "code"
+    },
+    "color": {
+     "condition": {
+      "test": "datum.t > 0.55",
+      "value": "#fff"
+     },
+     "value": "#111111"
+    }
+   }
+  },
+  {
+   "mark": {
+    "type": "text",
+    "font": "Archivo",
+    "fontWeight": 600,
+    "fontSize": 13,
+    "dy": 9
+   },
+   "encoding": {
+    "text": {
+     "field": "value",
+     "type": "quantitative",
+     "format": ".1f"
+    },
+    "color": {
+     "condition": {
+      "test": "datum.t > 0.55",
+      "value": "#fff"
+     },
+     "value": "#111111"
+    }
+   }
+  }
+ ],
+ "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+ "config": {
+  "font": "Archivo",
+  "background": null,
+  "view": {
+   "stroke": null
+  },
+  "axis": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111",
+   "domainColor": "#111111",
+   "tickColor": "#111111",
+   "gridColor": "#00000014",
+   "domainWidth": 2,
+   "tickWidth": 2
+  },
+  "legend": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111"
+  },
+  "header": {
+   "labelFont": "Archivo",
+   "labelFontWeight": 800,
+   "labelFontSize": 13,
+   "titleFontSize": 0,
+   "labelColor": "#111111",
+   "labelAnchor": "start",
+   "labelPadding": 6
+  }
+ },
+ "padding": {
+  "left": 4,
+  "right": 18,
+  "top": 6,
+  "bottom": 4
+ }
+}
