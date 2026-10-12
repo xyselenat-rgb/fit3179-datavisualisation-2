@@ -3,234 +3,461 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>What's really in Australia's shopping trolley?</title>
-<meta name="description" content="A Vega-Lite data story about nutrition, ingredients and Health Star Ratings in packaged food sold in Australia.">
+<title>Packaged food in Australia, read like the label</title>
+<meta name="description" content="A Vega-Lite data story: 246 packaged foods, their Health Star Ratings and what the ABS says about how Australians eat.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=DotGothic16&display=swap" rel="stylesheet">
 
 <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
 <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
 
 <style>
-  :root{ --ink:#1b1b1f; --ink-soft:#4a4a52; --paper:#faf7f2; --paper-dim:#f1ece3; --line:#ddd4c6; --accent:#c6572a; --accent-dim:#e7d9ca; --max-w:1180px; }
-  *{ box-sizing: border-box; }
-  body{ margin:0; background:var(--paper); color:var(--ink); font-family:'Inter',system-ui,sans-serif; font-size:16px; line-height:1.55; overflow-x:hidden; }
-  .wrap{ width:100%; max-width:var(--max-w); margin:0 auto; padding:0 clamp(16px,4vw,48px); }
-
-  h1,h2,h3 {
-    font-family:'Fraunces',Georgia,serif;
-    font-weight:600;
-    line-height:1.15;
-    margin:0 0 .4em;}
-  h1 {
-    font-size:clamp(2rem,5vw,3.4rem);
-    font-weight:500; }
-  h2 {
-    font-size:clamp(1.4rem,3vw,2rem); }
-  h3 {
-    font-size:1rem;
-    font-weight:600;
-    font-family:'Inter',sans-serif; }
-
-  p{ margin:0 0 1em; max-width:68ch; }
-  .lede{ font-size:1.15rem; color:var(--ink-soft); max-width:60ch; }
-  .eyebrow{ font-size:.8rem; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); margin-bottom:.6em; display:block; }
-  .stat{ font-family:'Fraunces',serif; font-weight:500; color:var(--accent); }
-  header.hero{ background:linear-gradient(180deg,var(--paper-dim),var(--paper)); border-bottom:1px solid var(--line); padding:clamp(48px,9vw,96px) 0 clamp(32px,6vw,56px); }
-  section.chapter{ padding:clamp(40px,7vw,72px) 0; border-bottom:1px solid var(--line); }
-
-  /* grid for 1/2/3 charts under one heading; set data-cols on .chart-row.
-     always collapses to 1 column under 720px, so no horizontal scroll */
-  .chart-row{
-    display: grid;
-    grid-template-columns: repeat(var(--cols, 1), minmax(0, 1fr));
-    gap: clamp(14px, 2.5vw, 24px);
+  
+  :root{
+    --bg:#CFE8D6; --ink:#111; --paper:#fff; --pack:#DCD3FF; --pink:#E0245E; --blue:#2338D6; --grey:#D9D9D0;
+    --rule:3px solid var(--ink); --gap:clamp(12px,2vw,24px); --pad:clamp(14px,2.6vw,34px);
   }
-  .chart-row[data-cols="2"]{ --cols: 2; }
-  .chart-row[data-cols="3"]{ --cols: 3; }
-  @media (max-width: 720px){ .chart-row{ --cols: 1 !important; } }
-
-  .chart-card{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:10px;
-    padding:clamp(12px,3vw,24px);
-    overflow-x:auto;
-    display: flex;
-    flex-direction: column;
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Archivo',system-ui,sans-serif; font-stretch:100%; font-size:17px; line-height:1.45;
+    overflow-x:hidden; padding:clamp(8px,2vw,28px);
   }
-  .chart-card h3{ margin-bottom:.5em; }
-  .chart-caption{ font-size:.85rem; color:var(--ink-soft); margin-top:.6em; }
+  .stamp{ font-family:'DotGothic16',monospace; letter-spacing:.02em; }
 
-  footer{ padding:40px 0 64px; color:var(--ink-soft); font-size:.85rem; }
+  
+  .label{ max-width:1280px; margin:0 auto; background:var(--paper); border:6px solid var(--ink); }
+  .block{ padding:var(--pad); border-top:12px solid var(--ink); }
+  .block:first-child{ border-top:0; }
+
+  
+  .sticker{
+    display:grid; place-items:center; border:3px solid var(--ink); border-radius:50%;
+    font-size:2.4rem; line-height:1; background:var(--pack); box-shadow:3px 3px 0 var(--ink);
+  }
+  .tag{
+    display:inline-block; border:3px solid var(--ink); background:var(--pack); padding:6px 12px 4px;
+    font-weight:900; font-stretch:68%; text-transform:uppercase; font-size:1.25rem; box-shadow:3px 3px 0 var(--ink);
+  }
+  .burst{
+    display:grid; place-content:center; text-align:center; background:var(--pink); color:#fff;
+    clip-path:polygon(50.0% 0.0%, 58.0% 9.8%, 69.1% 3.8%, 72.8% 15.9%, 85.4% 14.6%, 84.1% 27.2%, 96.2% 30.9%, 90.2% 42.0%, 100.0% 50.0%, 90.2% 58.0%, 96.2% 69.1%, 84.1% 72.8%, 85.4% 85.4%, 72.8% 84.1%, 69.1% 96.2%, 58.0% 90.2%, 50.0% 100.0%, 42.0% 90.2%, 30.9% 96.2%, 27.2% 84.1%, 14.6% 85.4%, 15.9% 72.8%, 3.8% 69.1%, 9.8% 58.0%, 0.0% 50.0%, 9.8% 42.0%, 3.8% 30.9%, 15.9% 27.2%, 14.6% 14.6%, 27.2% 15.9%, 30.9% 3.8%, 42.0% 9.8%);
+  }
+  .burst b{ font-size:clamp(2.6rem,6vw,4.6rem); font-stretch:62%; font-weight:900; line-height:.9; }
+  .burst span{ font-weight:800; font-size:.9rem; }
+
+  
+  .hero-grid{ display:grid; grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); gap:var(--gap); align-items:stretch; }
+  .kicker{ margin:0 0 10px; font-size:.95rem; }
+  h1{
+    margin:0; font-weight:900; font-stretch:62%; text-transform:uppercase;
+    font-size:clamp(3rem,8.6vw,7.6rem); line-height:.86; letter-spacing:-.01em;
+  }
+  .hero-sub{ font-size:clamp(1.05rem,1.5vw,1.25rem); max-width:40ch; margin:1rem 0 0; font-weight:500; }
+  .stickers{ position:relative; min-height:300px; background:var(--pink); border:var(--rule); overflow:hidden; }
+  .stickers::before{ content:""; position:absolute; inset:0; background:radial-gradient(#ffffff55 2px, transparent 2.5px) 0 0/18px 18px; }
+  .stickers .sticker, .stickers .burst, .stickers .tag{ position:absolute; }
+  .stickers .burst{ width:62%; aspect-ratio:1; left:19%; top:12%; background:var(--blue); transform:rotate(-8deg); }
+  .stickers .s1{ width:84px; height:84px; left:5%; top:6%; transform:rotate(-12deg); }
+  .stickers .s2{ width:84px; height:84px; right:5%; top:5%; transform:rotate(10deg); background:#fff; }
+  .stickers .s3{ width:84px; height:84px; left:7%; bottom:14%; transform:rotate(8deg); background:#fff; }
+  .stickers .s4{ width:84px; height:84px; right:6%; bottom:20%; transform:rotate(-9deg); }
+  .stickers .tag{ left:50%; bottom:5%; transform:translateX(-50%) rotate(-3deg); white-space:nowrap; }
+
+  .serv{ border-top:6px solid var(--ink); border-bottom:6px solid var(--ink); margin-top:var(--gap); padding:8px 0; display:flex; flex-wrap:wrap; gap:4px 28px; font-weight:800; font-size:1.05rem; }
+  .facts{ display:grid; grid-template-columns:repeat(9,minmax(0,1fr)); border-bottom:6px solid var(--ink); }
+  .fact{ padding:10px 10px 8px; border-left:2px solid var(--ink); display:flex; flex-direction:column; justify-content:space-between; gap:2px; min-width:0; }
+  .fact:first-child{ border-left:0; padding-left:0; }
+  .fact .fn{ font-weight:800; font-size:.9rem; }
+  .fact .fn i{ font-style:normal; font-weight:500; }
+  .fact b{ font-size:clamp(1.8rem,3.4vw,2.8rem); font-stretch:62%; font-weight:900; line-height:1; }
+  .fact .fu{ font-size:.8rem; font-weight:600; }
+  .fact.hsr b{ color:var(--pink); }
+  @media (max-width:1000px){ .facts{ grid-template-columns:repeat(3,minmax(0,1fr)); } .fact{ border-top:2px solid var(--ink); } .fact:nth-child(3n+1){ border-left:0; padding-left:0; } }
+  @media (max-width:860px){ .hero-grid{ grid-template-columns:1fr; } .stickers{ min-height:260px; } }
+
+  
+  .ch-head{ display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:6px clamp(12px,2.4vw,32px); align-items:center; margin-bottom:var(--gap); }
+  .ch-head .tag{ grid-row:1; }
+  h2.ch-title{ margin:0; font-weight:900; font-stretch:68%; text-transform:uppercase; font-size:clamp(2.1rem,5vw,4.2rem); line-height:.9; }
+  .lede{ grid-column:2; margin:0; max-width:60ch; font-size:1.08rem; font-weight:500; }
+  .ch-stat{ grid-column:3; grid-row:1 / span 2; display:flex; align-items:center; gap:14px; border-left:4px solid var(--ink); padding-left:clamp(12px,2vw,24px); align-self:stretch; }
+  .ch-stat .sticker{ width:68px; height:68px; font-size:2rem; flex:none; }
+  .ch-stat b{ display:block; font-size:clamp(2.2rem,4.4vw,3.6rem); font-stretch:62%; font-weight:900; line-height:.9; }
+  .ch-stat span{ display:block; font-weight:700; font-size:.85rem; max-width:14ch; line-height:1.15; }
+  @media (max-width:760px){
+    .ch-head{ grid-template-columns:auto minmax(0,1fr); }
+    .ch-stat{ grid-column:1 / -1; grid-row:auto; border-left:0; border-top:3px solid var(--ink); padding:10px 0 0; }
+    .lede{ grid-column:1 / -1; }
+  }
+
+  .row{ display:grid; gap:var(--gap); align-items:stretch; }
+  .row.two{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .row.wide-narrow{ grid-template-columns:minmax(0,1.35fr) minmax(0,1fr); }
+  .row.three{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  @media (max-width:980px){ .row.three{ grid-template-columns:1fr; } }
+  @media (max-width:860px){ .row.two,.row.wide-narrow{ grid-template-columns:1fr; } }
+
+  .panel{ border:var(--rule); min-width:0; display:flex; flex-direction:column; background:var(--paper); }
+  .panel-head{ padding:10px 14px 8px; border-bottom:var(--rule); background:var(--pack); }
+  .panel-head h3{ margin:0; font-size:1.15rem; font-weight:800; font-stretch:80%; line-height:1.15; }
+  .panel-head .kind{ display:block; font-size:.78rem; margin-bottom:2px; }
+  
+  .chart{ padding:10px 12px 2px; min-width:0; display:block; width:100%; flex:1; }
+  .chart.vega-embed{ display:block; width:100%; }
+  .chart summary{ display:none; }
+  .note{ margin:0; padding:8px 14px 10px; border-top:2px solid var(--ink); font-size:.88rem; line-height:1.4; }
+  .note b{ font-weight:800; }
+
+  
+  .row.chart-text{ grid-template-columns:minmax(0,2fr) minmax(0,1fr); }
+  .row.text-chart{ grid-template-columns:minmax(0,1fr) minmax(0,2fr); }
+  .row + .row{ margin-top:var(--gap); }
+  .story{ border:var(--rule); background:var(--pack); padding:16px 18px; display:flex; flex-direction:column; gap:10px; min-width:0; }
+  .story .kind{ font-size:.8rem; }
+  .story h3{ margin:0; font-size:clamp(1.3rem,2.2vw,1.8rem); font-weight:900; font-stretch:70%; line-height:1.05; text-transform:uppercase; }
+  .story p{ margin:0; font-size:1.08rem; line-height:1.5; }
+  .story p b{ font-weight:800; }
+  .story .sticker{ width:84px; height:84px; margin-top:auto; align-self:flex-end; background:var(--paper); transform:rotate(7deg); }
+  .row.text-chart .story .sticker{ align-self:flex-start; transform:rotate(-7deg); }
+  .chartbox{ border:var(--rule); background:var(--paper); min-width:0; display:flex; flex-direction:column; }
+  .chartbox .kind{ padding:6px 12px 4px; background:var(--pack); border-bottom:var(--rule); font-size:.8rem; }
+  @media (max-width:860px){ .row.chart-text,.row.text-chart{ grid-template-columns:1fr; } }
+
+  
+  .legend{ display:flex; flex-wrap:wrap; gap:8px 20px; align-items:center; border:var(--rule); padding:10px 14px; margin-top:var(--gap); background:var(--bg); font-weight:700; font-size:.88rem; }
+  .legend .lg-title{ font-weight:900; text-transform:uppercase; font-stretch:75%; }
+  .lg-shapes{ display:flex; flex-wrap:wrap; gap:6px; }
+  .lg-btn{ display:inline-flex; align-items:center; gap:6px; border:2px solid var(--ink); background:var(--paper); padding:3px 9px 3px 6px; font:inherit; font-weight:700; font-size:.85rem; cursor:pointer; color:var(--ink); }
+  .lg-btn.on{ background:var(--pack); }
+  .lg-btn:focus-visible{ outline:4px solid var(--blue); outline-offset:2px; }
+  .lg-grad{ display:inline-flex; align-items:center; gap:8px; }
+  .lg-grad i{ display:block; width:min(220px,40vw); height:14px; border:2px solid var(--ink); }
+  .lg-key{ display:inline-flex; align-items:center; gap:6px; }
+  .lg-key i{ display:block; width:18px; height:14px; border:2px solid var(--ink); }
+
+  
+  .picker{ display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; margin-bottom:var(--gap); padding:10px 14px; border:var(--rule); background:var(--bg); }
+  .picker label{ font-weight:800; }
+  .picker select{
+    font:inherit; font-weight:600; padding:8px 12px; border:var(--rule); background:var(--paper); color:var(--ink);
+    flex:1 1 280px; max-width:100%; min-width:0; border-radius:0;
+  }
+  .picker select:focus-visible{ outline:4px solid var(--blue); outline-offset:2px; }
+  #map-range{ font-weight:800; }
+
+  
+  .foot{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--gap); font-size:.92rem; }
+  .foot h4{ margin:0 0 4px; font-weight:900; font-size:1rem; text-transform:uppercase; font-stretch:75%; }
+  .foot p{ margin:0 0 .5em; }
+  @media (max-width:860px){ .foot{ grid-template-columns:1fr; } }
+  @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
 </style>
 </head>
 <body>
-    <header class="hero">
-        <div class="wrap">
-            <h1>Packaged Foods Nutrition Sold in Australian Supermarkets</h1>
-            <span class="eyebrow">What 246 real supermarket products say about nutrition, ingredients and the Health Star Rating on the box</span>
-        </div>
-    </header>
+<div class="label">
 
-    <main class="wrap">
+<header class="block">
+  <div class="hero-grid">
+    <div>
+      <p class="kicker stamp">OpenHSR dataset + ABS National Health Survey 2022</p>
+      <h1>Packaged food, read like the label</h1>
+      <p class="hero-sub">246 products from Australian supermarket shelves, what is in them, and the stars they earned.</p>
+    </div>
+    <div class="stickers" aria-hidden="true">
+      <div class="sticker s1">🍎</div><div class="sticker s2">🥛</div>
+      <div class="burst"><b id="burst-hsr">2.8</b><span>AVERAGE STARS<br>OUT OF 5</span></div>
+      <div class="sticker s3">🍞</div><div class="sticker s4">🥫</div>
+      <span class="tag">100% real data</span>
+    </div>
+  </div>
+  <div class="serv"><span>Nutrition information</span><span>Servings per pack: <span id="n-products">246</span> products</span><span>Serving size: 100 g</span></div>
+  <div class="facts" id="facts"></div>
+</header>
 
-    <!-- Chapter 1: solo chart, full width -->
-    <section class="chapter" id="chapter-trolley-overview">
-        <div class="chapter-head">
-            <span class="eyebrow">Chapter 1</span>
-            <h2>What's in the trolley</h2>
-        </div>
-        <p class="lede">Meat, frozen meals and cereal dominate the sample of 246 products pulled from supermarket shelves. Each square below is one product, not an estimate.</p>
+<main>
 
-        <div class="chart-row" data-cols="1">
-            <div class="chart-card">
-                <div id="chart-trolley-overview"></div>
+<section class="block" id="trolley">
+  <div class="ch-head">
+    <span class="tag stamp">Ch 1</span>
+    <h2 class="ch-title">Eight shelves, 246 products</h2>
+    <p class="lede">Every square is one real product, sorted from most stars (top left) to fewest. Pink is few stars, blue is many.</p>
+    <div class="ch-stat"><div class="sticker">🛒</div><div><b>246</b><span>products across 8 shelves</span></div></div>
+  </div>
+  <div class="panel">
+    <div class="panel-head"><span class="kind stamp">Waffle chart</span><h3>Pantry &amp; canned is the biggest shelf, Bakery the smallest</h3></div>
+    <div class="chart" id="v-waffle"></div>
+    <p class="note">The shelf names are my own tidy-up of the dataset's <i>Product type</i> column, which mixes spellings ("Bakery", "bakery") and one-off labels. Anything unclear goes to Pantry &amp; canned.</p>
+  </div>
+</section>
 
+<section class="block" id="sugar">
+  <div class="ch-head">
+    <span class="tag stamp">Ch 2</span>
+    <h2 class="ch-title">Stars follow the sugar</h2>
+    <p class="lede">The star rating is a score out of five. Plot it against sugar and the pattern is hard to miss.</p>
+    <div class="ch-stat"><div class="sticker">🍬</div><div><b>38 g</b><span>median sugar at half a star</span></div></div>
+  </div>
+  <div class="row chart-text">
+    <div class="chartbox"><span class="kind stamp">Jitter plot, log scale</span><div class="chart" id="v-sugar"></div></div>
+    <aside class="story">
+      <span class="kind stamp">What it shows</span>
+      <h3>Half-star products carry a median 38 g of sugar per 100 g</h3>
+      <p>From 3 stars up it is about <b>1 g</b>. Correlation between stars and sugar: <b>−0.47</b>.</p>
+      <p>Each dot is one product, nudged sideways so they don't stack. Black bars are the median at each star level. The axis is logarithmic, so equal steps up mean "times more", not "more grams".</p>
+      <div class="sticker">🍭</div>
+    </aside>
+  </div>
+  <div class="row text-chart">
+    <aside class="story">
+      <span class="kind stamp">What it shows</span>
+      <h3>Some shelves start behind</h3>
+      <p>Snacks &amp; sweets average <b>1.0</b> star. Cereals &amp; grains average <b>3.5</b>.</p>
+      <p>Average stars per shelf, with the number of products in brackets.</p>
+      <div class="sticker">🥣</div>
+    </aside>
+    <div class="chartbox"><span class="kind stamp">Lollipop chart</span><div class="chart" id="v-lolly"></div></div>
+  </div>
+  <div class="legend js-legend" data-kind="shapes"></div>
+</section>
 
-                <p class="chart-caption">Waffle chart: each square is one product, grouped by category.</p>
-            </div>
-        </div>
-    </section>
+<section class="block" id="salt">
+  <div class="ch-head">
+    <span class="tag stamp">Ch 3</span>
+    <h2 class="ch-title">Salt and protein pull too</h2>
+    <p class="lede">Sugar is not the only input. Sodium counts against a product, protein counts for it. Both signals are weaker than sugar.</p>
+    <div class="ch-stat"><div class="sticker">🧂</div><div><b>5,070</b><span>mg sodium per 100 g, the saltiest product</span></div></div>
+  </div>
+  <div class="row two">
+    <div class="panel">
+      <div class="panel-head"><span class="kind stamp">Jitter plot, log scale</span><h3>Salty products land everywhere on the scale</h3></div>
+      <div class="chart" id="v-sodium"></div>
+      <p class="note">Correlation with stars: <b>−0.28</b>. The axis is logarithmic so the two extreme products (4,360 and 5,070 mg per 100 g) fit on the same chart as the rest.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="kind stamp">Jitter plot</span><h3>More protein helps, but only a little</h3></div>
+      <div class="chart" id="v-protein"></div>
+      <p class="note">Correlation with stars: <b>+0.24</b>. The most protein-dense product in the sample has 41 g per 100 g.</p>
+    </div>
+  </div>
+  <div class="legend js-legend" data-kind="shapes"></div>
+</section>
 
-    <!-- Chapter 2: 2-up row, one heading shared by both charts -->
-    <section class="chapter" id="chapter-reading-the-stars">
-        <div class="chapter-head">
-            <span class="eyebrow">Chapter 2</span>
-            <h2>Reading the stars</h2>
-        </div>
-        <p class="lede">A 5-star rating is meant to signal a healthier product, but the two charts below test that against the actual numbers.</p>
+<section class="block" id="ingredients">
+  <div class="ch-head">
+    <span class="tag stamp">Ch 4</span>
+    <h2 class="ch-title">Read the small print</h2>
+    <p class="lede">A long ingredient list is a rough sign of processing. The allergen line tells you what else is in the factory.</p>
+    <div class="ch-stat"><div class="sticker">🥜</div><div><b>55</b><span>items on the longest ingredient list</span></div></div>
+  </div>
+  <div class="row chart-text">
+    <div class="chartbox"><span class="kind stamp">Strip plot, log scale</span><div class="chart" id="v-ingredients"></div></div>
+    <aside class="story">
+      <span class="kind stamp">What it shows</span>
+      <h3>Snacks and pantry foods carry the longest ingredient lists</h3>
+      <p>Median list length is <b>13</b> items for Snacks &amp; sweets and Pantry &amp; canned, <b>3</b> for Dairy.</p>
+      <p>Items are counted by splitting at commas, ignoring brackets, on a logarithmic axis. Only 112 products have an ingredients list, and none of the Frozen &amp; ready or Bakery products do.</p>
+      <div class="sticker">📝</div>
+    </aside>
+  </div>
+  <div class="row text-chart">
+    <aside class="story">
+      <span class="kind stamp">What it shows</span>
+      <h3>Gluten and milk are the allergens you meet most</h3>
+      <p>Each is named in <b>45</b> of the <b>79</b> products with an allergen entry.</p>
+      <p>Allergen text is matched by keyword, so unusual wording can be missed.</p>
+      <div class="sticker">🥛</div>
+    </aside>
+    <div class="chartbox"><span class="kind stamp">Bar chart</span><div class="chart" id="v-allergens"></div></div>
+  </div>
+  <div class="legend js-legend" data-kind="stars-allergen"></div>
+</section>
 
-        <div class="chart-row" data-cols="2">
-            <div class="chart-card">
-                <h3>Higher rating, less sugar?</h3>
-                <div id="chart-hsr-sugar"></div>
-                
+<section class="block" id="geography">
+  <div class="ch-head">
+    <span class="tag stamp">Ch 5</span>
+    <h2 class="ch-title">Where Australians stand</h2>
+    <p class="lede">The ABS surveyed adults in every state and territory. Pick a measure and compare how three map types show the same eight numbers.</p>
+    <div class="ch-stat"><div class="sticker">🗺️</div><div><b>8</b><span>states and territories, 3 map types</span></div></div>
+  </div>
+  <div class="picker">
+    <label for="measure">Measure</label>
+    <select id="measure"></select>
+    <span id="map-range"></span>
+  </div>
+  <div class="row three">
+    <div class="panel">
+      <div class="panel-head"><span class="kind stamp">Choropleth</span><h3>Colour shows the level</h3></div>
+      <div class="chart" id="v-choro"></div>
+      <p class="note">Large states dominate the eye. The ACT is too small to see.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="kind stamp">Proportional symbol</span><h3>Circle area shows the level</h3></div>
+      <div class="chart" id="v-prop"></div>
+      <p class="note">Circle area runs from zero, so states with similar rates look alike. The number inside each circle is the rate.</p>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span class="kind stamp">Tile grid map</span><h3>Every state gets equal space</h3></div>
+      <div class="chart" id="v-tiles"></div>
+      <p class="note">Squares sit roughly where the states do. The ACT counts as much as Queensland.</p>
+    </div>
+  </div>
+  <div class="legend js-legend" data-kind="map"></div>
+</section>
 
-                <p class="chart-caption">Sugar (g per 100g) plotted against Health Star Rating. Each dot is one product.</p>
-            </div>
-            <div class="chart-card">
-                <h3>Some categories start behind</h3>
-                <div id="chart-hsr-by-category"></div>
+</main>
 
+<footer class="block">
+  <div class="foot">
+    <div>
+      <h4>Data</h4>
+      <p>Products: OpenHSR dataset, 246 packaged foods with nutrients per 100 g and a Health Star Rating.</p>
+      <p>Health survey: Australian Bureau of Statistics, National Health Survey: State and territory findings, 2022.</p>
+    </div>
+    <div>
+      <h4>May contain gaps</h4>
+      <p>Not every product lists ingredients or allergens, so Chapter 4 uses smaller samples. One product has no category code. Shelf groups are my own grouping.</p>
+    </div>
+    <div>
+      <h4>Built with</h4>
+      <p>Vega-Lite 5 and vega-embed. State boundaries are simplified from ABS state and territory outlines. Type: Archivo and DotGothic16.</p>
+    </div>
+  </div>
+</footer>
 
-                <p class="chart-caption">Mean Health Star Rating per food category.</p>
-            </div>
-        </div>
-    </section>
+</div>
 
-    <!-- Chapter 3: 2-up row — sodium vs HSR, protein vs HSR -->
-    <section class="chapter" id="chapter-whats-in-it">
-        <div class="chapter-head">
-            <span class="eyebrow">Chapter 3</span>
-            <h2>What's actually in it</h2>
-        </div>
-        <p class="lede">Sugar isn't the only thing a star rating weighs. Sodium pulls it down, protein pushes it up.</p>
+<script>
+  const $ = s => document.querySelector(s);
+  const SPEC = n => `../specs/${n}.json`;
+  const V = {};
+  const embed = async (id, spec) => { const r = await vegaEmbed(id, spec, { actions:false, renderer:'svg' }); V[id] = r.view; return r; };
+  const getSpec = async n => (await fetch(SPEC(n))).json();
+  const mean = a => a.reduce((s,v)=>s+v,0) / a.length;
 
-        <div class="chart-row" data-cols="2">
-            <div class="chart-card">
-                <h3>Sodium vs Health Star Rating</h3>
-                <div id="chart-hsr-sodium"></div>
+  async function hero(){
+    const text = await (await fetch('../dataset/OpenHSR.csv')).text();
+    const rows = vega.read(text, { type:'csv', parse:'auto' });
+    const avg = f => mean(rows.map(r => r[f]).filter(v => typeof v === 'number'));
+    const cols = [
+      ['Energy','','nutrient_energy_kj','kJ',0], ['Protein','','protein_g_per_100g','g',1],
+      ['Fat','total','fat_g_per_100g','g',1], ['Fat','saturated','sat_fat_g_per_100g','g',1],
+      ['Carbs','total','carbohydrates','g',1], ['Carbs','sugars','sugars_g_per_100g','g',1],
+      ['Fibre','','fiber_g_per_100g','g',1], ['Sodium','','sodium_mg_per_100g','mg',0]
+    ];
+    $('#facts').innerHTML = cols.map(([n,sub,f,u,d]) =>
+      `<div class="fact"><span class="fn">${n}${sub ? ` <i>${sub}</i>` : ''}</span><b>${avg(f).toFixed(d)}</b><span class="fu">${u} per 100 g</span></div>`).join('')
+      + `<div class="fact hsr"><span class="fn">Health stars</span><b>${avg('HSR').toFixed(1)}</b><span class="fu">out of 5</span></div>`;
+    $('#n-products').textContent = rows.length;
+    $('#burst-hsr').textContent = avg('HSR').toFixed(1);
+  }
 
+  let waffleCols = 0;
+  async function waffle(){
+    const w = $('#v-waffle').clientWidth - 24;
+    const cols = w < 520 ? 1 : w < 860 ? 2 : 4;
+    if (cols === waffleCols) return;
+    waffleCols = cols;
+    const spec = await getSpec('trolley_overview_waffle');
+    const cell = Math.max(Math.floor((w - (cols - 1) * 14) / cols) - 8, 120);
+    spec.columns = cols;
+    spec.spec.width = cell;
+    spec.spec.height = cell * 4 / 15;
+    await embed('#v-waffle', spec);
+  }
 
-                <p class="chart-caption">Sodium (mg per 100g) by Health Star Rating.</p>
-            </div>
-            <div class="chart-card">
-                <h3>Protein vs Health Star Rating</h3>
-                <div id="chart-hsr-protein"></div>
+  async function abs(){
+    const lines = (await (await fetch('../dataset/Proportion of adults aged 18 years and over by health risk factors (%).csv')).text()).split(/\r?\n/);
+    const cells = l => [...l.matchAll(/"([^"]*)"/g)].map(m => m[1]);
+    const head = cells(lines.find(l => l.startsWith(',')));
+    const fix = { Vic:'VIC', Qld:'QLD', Tas:'TAS' };
+    const table = {};
+    lines.forEach(l => { const c = cells(l); if (c.length === head.length + 1)
+      table[c[0]] = c.slice(1).map((v,i) => ({ code:(fix[head[i]]||head[i]).toUpperCase(), state:head[i], value:+v })).filter(r => r.state !== 'Australia'); });
+    return table;
+  }
 
+  async function maps(){
+    const table = await abs();
+    const names = Object.keys(table), sel = $('#measure');
+    sel.innerHTML = names.map(n => `<option>${n}</option>`).join('');
+    sel.value = names.find(n => n.includes('Body Mass')) || names[0];
+    const specs = await Promise.all(['map_choropleth','map_proportional_symbol','map_tile_grid'].map(getSpec));
+    const ids = ['#v-choro','#v-prop','#v-tiles'];
+    const rowsNow = () => table[sel.value];
+    specs.forEach(s => s.datasets.abs = rowsNow());
+    const views = (await Promise.all(specs.map((s,i) => embed(ids[i], s)))).map(r => r.view);
 
-                <p class="chart-caption">Protein (g per 100g) by Health Star Rating.</p>
-            </div>
-        </div>
-    </section>
+    const update = () => {
+      const rows = rowsNow();
+      views.forEach(v => v.change('abs', vega.changeset().remove(() => true).insert(rows)).run());
+      const hi = rows.reduce((a,b) => b.value > a.value ? b : a), lo = rows.reduce((a,b) => b.value < a.value ? b : a);
+      const lo2 = Math.min(...rows.map(r => r.value)), hi2 = Math.max(...rows.map(r => r.value));
+      $('#lg-lo').textContent = lo2.toFixed(0) + '%'; $('#lg-hi').textContent = hi2.toFixed(0) + '%';
+      $('#map-range').textContent = `Highest: ${hi.state} (${hi.value}%). Lowest: ${lo.state} (${lo.value}%).`;
+    };
+    sel.addEventListener('change', update);
+    update();
+  }
 
-    <!-- Chapter 4: 2-up row — ingredient count by category, allergen frequency -->
-    <section class="chapter" id="chapter-ingredients-processing">
-        <div class="chapter-head">
-            <span class="eyebrow">Chapter 4</span>
-            <h2>Ingredients & processing</h2>
-        </div>
-        <p class="lede">A longer ingredient list usually means more processing. Here's how that stacks up by category, and which allergens turn up most.</p>
+  const frame = () => new Promise(r => requestAnimationFrame(() => r()));
+  async function matchHeights(){
+    for (let pass = 0; pass < 2; pass++){
+      await frame();
+      for (const c of document.querySelectorAll('.row .chart')){
+        const v = V['#' + c.id], cs = getComputedStyle(c);
+        const free = c.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom) - c.querySelector('svg').getBoundingClientRect().height;
+        if (v && free > 2) await v.height(v.height() + free).runAsync();
+      }
+    }
+  }
 
-        <div class="chart-row" data-cols="2">
-            <div class="chart-card">
-                <h3>Ingredient count by category</h3>
-                <div id="chart-ingredient-count"></div>
+  const GROUPS = ['Meat & eggs','Frozen & ready','Cereals & grains','Snacks & sweets','Drinks','Dairy','Bakery','Pantry & canned'];
+  const SHAPE_SVG = {
+    circle:'<circle cx="7" cy="7" r="5"/>', square:'<rect x="2" y="2" width="10" height="10"/>',
+    diamond:'<polygon points="7,1 13,7 7,13 1,7"/>', up:'<polygon points="7,1 13,12 1,12"/>',
+    down:'<polygon points="1,2 13,2 7,13"/>', cross:'<path d="M5 1h4v4h4v4h-4v4h-4v-4h-4v-4h4z"/>',
+    right:'<polygon points="2,1 13,7 2,13"/>', left:'<polygon points="12,1 1,7 12,13"/>' };
+  const SHAPE_ORDER = ['circle','square','diamond','up','down','cross','right','left'];
+  const STAR_GRAD = 'linear-gradient(90deg,#E0245E,#F08BA9,#D9D9D0,#8E9AE8,#2338D6)';
+  const JITTER_IDS = ['#v-sugar','#v-sodium','#v-protein'];
+  let activeGroup = '';
 
+  function setGroup(g){
+    activeGroup = (g === activeGroup) ? '' : g;
+    JITTER_IDS.forEach(id => V[id] && V[id].signal('grp', activeGroup).run());
+    document.querySelectorAll('.lg-btn').forEach(b => b.classList.toggle('on', b.dataset.g === activeGroup));
+  }
+  function buildLegends(){
+    document.querySelectorAll('.js-legend').forEach(el => {
+      const kind = el.dataset.kind;
+      if (kind === 'shapes'){
+        el.innerHTML = `<span class="lg-title">Shelf (click to isolate)</span><span class="lg-shapes">` +
+          GROUPS.map((g,i) => `<button class="lg-btn" data-g="${g}"><svg width="14" height="14" viewBox="0 0 14 14" fill="#D9D9D0" stroke="#111" stroke-width="1.3">${SHAPE_SVG[SHAPE_ORDER[i]]}</svg>${g}</button>`).join('') +
+          `</span><span class="lg-grad"><span class="lg-title">Stars</span>0.5<i style="background:${STAR_GRAD}"></i>5.0</span>`;
+        el.querySelectorAll('.lg-btn').forEach(b => b.addEventListener('click', () => setGroup(b.dataset.g)));
+      } else if (kind === 'stars-allergen'){
+        el.innerHTML = `<span class="lg-grad"><span class="lg-title">Stars (strip plot)</span>0.5<i style="background:${STAR_GRAD}"></i>5.0</span>` +
+          `<span class="lg-key"><span class="lg-title">Allergen bars</span><i style="background:#E0245E"></i>named as contained<i style="background:#fff"></i>may contain</span>`;
+      } else if (kind === 'map'){
+        el.innerHTML = `<span class="lg-grad"><span class="lg-title">% of adults (choropleth, tiles)</span><span id="lg-lo">0</span><i style="background:linear-gradient(90deg,#FFE3EA,#8B1038)"></i><span id="lg-hi">0</span></span>` +
+          `<span class="lg-key"><span class="lg-title">Circles</span>area = % of adults</span>`;
+      }
+    });
+  }
 
-                <p class="chart-caption">Number of listed ingredients per product, grouped by food category.</p>
-            </div>
-           
-            <div class="chart-card">
-                <h3>Allergen frequency</h3>
-                <div id="chart-allergen-frequency"></div>
+  buildLegends();
+  const jobs = [hero(), waffle(), maps(),
+    ...[['#v-sugar','hsr_vs_sugar_jitter'], ['#v-lolly','hsr_by_category'], ['#v-sodium','hsr_vs_sodium_jitter'],
+        ['#v-protein','hsr_vs_protein_jitter'], ['#v-ingredients','ingredient_count_by_category'],
+        ['#v-allergens','allergen_frequency']].map(async ([id, n]) => embed(id, await getSpec(n)))];
+  Promise.all(jobs).then(matchHeights);
 
-
-                <p class="chart-caption">How often each common allergen appears.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Chapter 5: 3 required map idiom -->
-    <section class="chapter" id="chapter-geography">
-        <div class="chapter-head">
-            <span class="eyebrow">Chapter 5</span>
-            <h2>Does geography change the picture?</h2>
-        </div>
-        <p class="lede">Diet-related health risk isn't even across Australia. These three maps look at the same ABS data three different ways.</p>
-
-        <div class="chart-row" data-cols="3">
-            <div class="chart-card">
-                <h3>Choropleth</h3>
-                <div id="chart-map-choropleth"></div>
-
-
-                <p class="chart-caption"></p>
-            </div>
-            <div class="chart-card">
-                <h3>Proportional symbol</h3>
-                <div id="chart-map-proportional-symbol"></div>
-
-
-                <p class="chart-caption"></p>
-            </div>
-
-            <div class="chart-card">
-                <h3>Tile grid</h3>
-                <div id="chart-map-tile-grid"></div>
-
-
-                <p class="chart-caption"></p>
-            </div>
-        </div>
-    </section>
-
-    </main>
-
-    <footer>
-        <div class="wrap">
-            <p>Sources and full citations: see <code>docs/sources.md</code> in this repository.</p>
-        </div>
-    </footer>
-
-    <script>
-        // Chapter 1-2: specs exist, wired up
-        vegaEmbed('#chart-trolley-overview', 'specs/trolley_overview_waffle.json', { actions: false });
-        vegaEmbed('#chart-hsr-sugar', 'specs/hsr_vs_sugar_jitter.json', { actions: false });
-        vegaEmbed('#chart-hsr-by-category', 'specs/hsr_by_category.json', { actions: false });
-
-        // Chapter 3-5: divs are in place, uncomment each line once its spec is built
-        // vegaEmbed('#chart-hsr-sodium', 'specs/hsr_vs_sodium.json', { actions: false });
-        // vegaEmbed('#chart-hsr-protein', 'specs/hsr_vs_protein.json', { actions: false });
-        // vegaEmbed('#chart-ingredient-count', 'specs/ingredient_count_by_category.json', { actions: false });
-        // vegaEmbed('#chart-allergen-frequency', 'specs/allergen_frequency.json', { actions: false });
-        // vegaEmbed('#chart-map-choropleth', 'specs/map_choropleth.json', { actions: false });
-        // vegaEmbed('#chart-map-proportional-symbol', 'specs/map_proportional_symbol.json', { actions: false });
-        // vegaEmbed('#chart-map-tile-grid', 'specs/map_tile_grid.json', { actions: false });
-    </script>
+  let t; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(async () => { await waffle(); matchHeights(); }, 250); });
+</script>
 </body>
 </html>
