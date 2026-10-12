@@ -1,0 +1,243 @@
+{
+ "data": {
+  "url": "../dataset/OpenHSR.csv"
+ },
+ "transform": [
+  {
+   "filter": "isValid(datum.HSR)"
+  },
+  {
+   "calculate": "({\"meat\": \"Meat & eggs\", \"eggs\": \"Meat & eggs\", \"burger\": \"Meat & eggs\", \"frozen foods\": \"Frozen & ready\", \"pizza\": \"Frozen & ready\", \"sandwich\": \"Frozen & ready\", \"ice cream\": \"Frozen & ready\", \"ice\": \"Frozen & ready\", \"cereals\": \"Cereals & grains\", \"pasta, rice and grains\": \"Cereals & grains\", \"pasta\": \"Cereals & grains\", \"snacks\": \"Snacks & sweets\", \"chips\": \"Snacks & sweets\", \"chocolate\": \"Snacks & sweets\", \"topping\": \"Snacks & sweets\", \"honey\": \"Snacks & sweets\", \"soda\": \"Drinks\", \"juice\": \"Drinks\", \"water\": \"Drinks\", \"coffee\": \"Drinks\", \"drink\": \"Drinks\", \"milk\": \"Dairy\", \"cheese\": \"Dairy\", \"cream\": \"Dairy\", \"yoghurt\": \"Dairy\", \"butter\": \"Dairy\", \"dairy\": \"Dairy\", \"bakery\": \"Bakery\", \"bread\": \"Bakery\"})[lower(trim(datum['Product type']))] || 'Pantry & canned'",
+   "as": "group"
+  },
+  {
+   "window": [
+    {
+     "op": "row_number",
+     "as": "rn"
+    }
+   ]
+  },
+  {
+   "calculate": "(abs(sin(datum.rn * 12.9898) * 43758.5453) % 1) - 0.5",
+   "as": "jit"
+  },
+  {
+   "aggregate": [
+    {
+     "op": "mean",
+     "field": "HSR",
+     "as": "avg"
+    },
+    {
+     "op": "count",
+     "as": "n"
+    }
+   ],
+   "groupby": [
+    "group"
+   ]
+  },
+  {
+   "calculate": "datum.group + \" (\" + datum.n + \")\"",
+   "as": "label"
+  },
+  {
+   "calculate": "0",
+   "as": "zero"
+  }
+ ],
+ "width": "container",
+ "height": 320,
+ "autosize": {
+  "type": "fit-x",
+  "contains": "padding"
+ },
+ "layer": [
+  {
+   "mark": {
+    "type": "rule",
+    "strokeWidth": 4,
+    "color": "#111111"
+   },
+   "encoding": {
+    "y": {
+     "field": "label",
+     "type": "nominal",
+     "sort": {
+      "field": "avg",
+      "op": "max",
+      "order": "descending"
+     },
+     "title": null,
+     "axis": {
+      "labelFontWeight": 700,
+      "labelLimit": 160
+     }
+    },
+    "x": {
+     "field": "zero",
+     "type": "quantitative"
+    },
+    "x2": {
+     "field": "avg"
+    }
+   }
+  },
+  {
+   "mark": {
+    "type": "circle",
+    "size": 520,
+    "stroke": "#111111",
+    "strokeWidth": 3,
+    "opacity": 1
+   },
+   "encoding": {
+    "y": {
+     "field": "label",
+     "type": "nominal",
+     "sort": {
+      "field": "avg",
+      "op": "max",
+      "order": "descending"
+     }
+    },
+    "x": {
+     "field": "avg",
+     "type": "quantitative",
+     "title": "Average Health Star Rating (stars)",
+     "scale": {
+      "domain": [
+       0,
+       5
+      ]
+     },
+     "axis": {
+      "values": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5
+      ]
+     }
+    },
+    "color": {
+     "field": "avg",
+     "type": "quantitative",
+     "scale": {
+      "type": "linear",
+      "domain": [
+       0.5,
+       1.625,
+       2.75,
+       3.875,
+       5
+      ],
+      "range": [
+       "#E0245E",
+       "#F08BA9",
+       "#D9D9D0",
+       "#8E9AE8",
+       "#2338D6"
+      ],
+      "interpolate": "lab",
+      "clamp": true
+     },
+     "legend": null
+    },
+    "tooltip": [
+     {
+      "field": "group",
+      "title": "Group"
+     },
+     {
+      "field": "n",
+      "title": "Products"
+     },
+     {
+      "field": "avg",
+      "title": "Average stars",
+      "format": ".2f"
+     }
+    ]
+   }
+  },
+  {
+   "mark": {
+    "type": "text",
+    "font": "Archivo",
+    "fontWeight": 800,
+    "fontSize": 11,
+    "color": "#111111"
+   },
+   "encoding": {
+    "y": {
+     "field": "label",
+     "type": "nominal",
+     "sort": {
+      "field": "avg",
+      "op": "max",
+      "order": "descending"
+     }
+    },
+    "x": {
+     "field": "avg",
+     "type": "quantitative"
+    },
+    "text": {
+     "field": "avg",
+     "type": "quantitative",
+     "format": ".1f"
+    }
+   }
+  }
+ ],
+ "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+ "config": {
+  "font": "Archivo",
+  "background": null,
+  "view": {
+   "stroke": null
+  },
+  "axis": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111",
+   "domainColor": "#111111",
+   "tickColor": "#111111",
+   "gridColor": "#00000014",
+   "domainWidth": 2,
+   "tickWidth": 2
+  },
+  "legend": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111"
+  },
+  "header": {
+   "labelFont": "Archivo",
+   "labelFontWeight": 800,
+   "labelFontSize": 13,
+   "titleFontSize": 0,
+   "labelColor": "#111111",
+   "labelAnchor": "start",
+   "labelPadding": 6
+  }
+ },
+ "padding": {
+  "left": 4,
+  "right": 18,
+  "top": 6,
+  "bottom": 4
+ }
+}

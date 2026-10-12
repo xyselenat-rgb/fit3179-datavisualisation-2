@@ -1,0 +1,163 @@
+{
+ "data": {
+  "url": "../dataset/OpenHSR.csv"
+ },
+ "transform": [
+  {
+   "filter": "isValid(datum.allergen) && indexof(lower(datum.allergen), 'http') < 0"
+  },
+  {
+   "calculate": "lower(datum.allergen)",
+   "as": "lc"
+  },
+  {
+   "calculate": "indexof(datum.lc, 'may contain')",
+   "as": "ix"
+  },
+  {
+   "calculate": "datum.ix < 0 ? datum.lc : slice(datum.lc, 0, datum.ix)",
+   "as": "def"
+  },
+  {
+   "calculate": "datum.ix < 0 ? '' : slice(datum.lc, datum.ix)",
+   "as": "may"
+  },
+  {
+   "calculate": "[{a:'Milk',c:test(regexp('milk|dairy|lactose|whey|casein'),datum.def),m:test(regexp('milk|dairy|lactose|whey|casein'),datum.may)},{a:'Egg',c:test(regexp('egg'),datum.def),m:test(regexp('egg'),datum.may)},{a:'Peanut',c:test(regexp('peanut'),datum.def),m:test(regexp('peanut'),datum.may)},{a:'Tree nuts',c:test(regexp('tree nut|almond|cashew|hazelnut|walnut|pecan|pistachio|macadamia'),datum.def),m:test(regexp('tree nut|almond|cashew|hazelnut|walnut|pecan|pistachio|macadamia'),datum.may)},{a:'Gluten / wheat',c:test(regexp('gluten|wheat|barley|rye'),datum.def),m:test(regexp('gluten|wheat|barley|rye'),datum.may)},{a:'Soy',c:test(regexp('soy'),datum.def),m:test(regexp('soy'),datum.may)},{a:'Sesame',c:test(regexp('sesame'),datum.def),m:test(regexp('sesame'),datum.may)},{a:'Fish',c:test(regexp('fish'),datum.def),m:test(regexp('fish'),datum.may)},{a:'Crustacean',c:test(regexp('crustacean|prawn|shrimp'),datum.def),m:test(regexp('crustacean|prawn|shrimp'),datum.may)},{a:'Sulphites',c:test(regexp('sulphite|sulfite'),datum.def),m:test(regexp('sulphite|sulfite'),datum.may)}]",
+   "as": "arr"
+  },
+  {
+   "flatten": [
+    "arr"
+   ]
+  },
+  {
+   "calculate": "datum.arr.a",
+   "as": "allergen_name"
+  },
+  {
+   "calculate": "datum.arr.c ? 'Listed as contained' : (datum.arr.m ? 'Listed as may contain' : 'none')",
+   "as": "status"
+  },
+  {
+   "filter": "datum.status != 'none'"
+  },
+  {
+   "aggregate": [
+    {
+     "op": "count",
+     "as": "products"
+    }
+   ],
+   "groupby": [
+    "allergen_name",
+    "status"
+   ]
+  }
+ ],
+ "width": "container",
+ "height": 320,
+ "autosize": {
+  "type": "fit-x",
+  "contains": "padding"
+ },
+ "mark": {
+  "type": "bar",
+  "stroke": "#111111",
+  "strokeWidth": 2,
+  "cornerRadiusEnd": 0
+ },
+ "encoding": {
+  "y": {
+   "field": "allergen_name",
+   "type": "nominal",
+   "sort": "-x",
+   "title": null,
+   "axis": {
+    "labelFontWeight": 700
+   }
+  },
+  "x": {
+   "field": "products",
+   "type": "quantitative",
+   "title": "Products (of those with an allergen entry)",
+   "stack": "zero"
+  },
+  "color": {
+   "field": "status",
+   "type": "nominal",
+   "title": null,
+   "scale": {
+    "domain": [
+     "Listed as contained",
+     "Listed as may contain"
+    ],
+    "range": [
+     "#E0245E",
+     "#FFFFFF"
+    ]
+   },
+   "legend": null
+  },
+  "tooltip": [
+   {
+    "field": "allergen_name",
+    "title": "Allergen"
+   },
+   {
+    "field": "status",
+    "title": ""
+   },
+   {
+    "field": "products",
+    "title": "Products"
+   }
+  ]
+ },
+ "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+ "config": {
+  "font": "Archivo",
+  "background": null,
+  "view": {
+   "stroke": null
+  },
+  "axis": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111",
+   "domainColor": "#111111",
+   "tickColor": "#111111",
+   "gridColor": "#00000014",
+   "domainWidth": 2,
+   "tickWidth": 2
+  },
+  "legend": {
+   "labelFont": "Archivo",
+   "titleFont": "Archivo",
+   "labelFontSize": 12,
+   "titleFontSize": 12,
+   "titleFontWeight": 700,
+   "labelColor": "#111111",
+   "titleColor": "#111111"
+  },
+  "header": {
+   "labelFont": "Archivo",
+   "labelFontWeight": 800,
+   "labelFontSize": 13,
+   "titleFontSize": 0,
+   "labelColor": "#111111",
+   "labelAnchor": "start",
+   "labelPadding": 6
+  }
+ },
+ "padding": {
+  "left": 4,
+  "right": 18,
+  "top": 6,
+  "bottom": 4
+ }
+}
