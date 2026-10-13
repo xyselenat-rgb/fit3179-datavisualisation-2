@@ -371,7 +371,7 @@
   }
 
   async function abs(){
-    const lines = (await (await fetch('dataset/Proportion of adults aged 18 years and over by health risk factors (%).csv')).text()).split(/\r?\n/);
+    const lines = (await (await fetch('dataset/abs_health_risk_factors.csv')).text()).split(/\r?\n/);
     const cells = l => [...l.matchAll(/"([^"]*)"/g)].map(m => m[1]);
     const head = cells(lines.find(l => l.startsWith(',')));
     const fix = { Vic:'VIC', Qld:'QLD', Tas:'TAS' };
