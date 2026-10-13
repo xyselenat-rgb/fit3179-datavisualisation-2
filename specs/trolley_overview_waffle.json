@@ -1,7 +1,7 @@
 {
  "description": "Waffle: one square per product, grouped, sorted by stars.",
  "data": {
-  "url": "../dataset/OpenHSR.csv"
+  "url": "dataset/OpenHSR.csv"
  },
  "transform": [
   {

@@ -1,6 +1,6 @@
 {
  "data": {
-  "url": "../dataset/OpenHSR.csv"
+  "url": "dataset/OpenHSR.csv"
  },
  "transform": [
   {

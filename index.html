@@ -333,14 +333,14 @@
 
 <script>
   const $ = s => document.querySelector(s);
-  const SPEC = n => `../specs/${n}.json`;
+  const SPEC = n => `specs/${n}.json`;
   const V = {};
   const embed = async (id, spec) => { const r = await vegaEmbed(id, spec, { actions:false, renderer:'svg' }); V[id] = r.view; return r; };
   const getSpec = async n => (await fetch(SPEC(n))).json();
   const mean = a => a.reduce((s,v)=>s+v,0) / a.length;
 
   async function hero(){
-    const text = await (await fetch('../dataset/OpenHSR.csv')).text();
+    const text = await (await fetch('dataset/OpenHSR.csv')).text();
     const rows = vega.read(text, { type:'csv', parse:'auto' });
     const avg = f => mean(rows.map(r => r[f]).filter(v => typeof v === 'number'));
     const cols = [
@@ -371,7 +371,7 @@
   }
 
   async function abs(){
-    const lines = (await (await fetch('../dataset/Proportion of adults aged 18 years and over by health risk factors (%).csv')).text()).split(/\r?\n/);
+    const lines = (await (await fetch('dataset/Proportion of adults aged 18 years and over by health risk factors (%).csv')).text()).split(/\r?\n/);
     const cells = l => [...l.matchAll(/"([^"]*)"/g)].map(m => m[1]);
     const head = cells(lines.find(l => l.startsWith(',')));
     const fix = { Vic:'VIC', Qld:'QLD', Tas:'TAS' };

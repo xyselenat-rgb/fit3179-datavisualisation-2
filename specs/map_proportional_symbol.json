@@ -24,7 +24,7 @@
  "layer": [
   {
    "data": {
-    "url": "../dataset/australia_states.topojson",
+    "url": "dataset/australia_states.topojson",
     "format": {
      "type": "topojson",
      "feature": "states"
