@@ -132,7 +132,7 @@
   .legend{ display:flex; flex-wrap:wrap; gap:8px 20px; align-items:center; border:var(--rule); padding:10px 14px; margin-top:var(--gap); background:var(--bg); font-weight:700; font-size:.88rem; }
   .legend .lg-title{ font-weight:900; text-transform:uppercase; font-stretch:75%; }
   .lg-shapes{ display:flex; flex-wrap:wrap; gap:6px; }
-  .lg-btn{ display:inline-flex; align-items:center; gap:6px; border:2px solid var(--ink); background:var(--paper); padding:3px 9px 3px 6px; font:inherit; font-weight:700; font-size:.85rem; cursor:pointer; color:var(--ink); }
+  .lg-btn{ display:inline-flex; align-items:center; gap:6px; border:2px solid var(--ink); background:var(--paper); padding:4px 10px; font:inherit; font-weight:700; font-size:.85rem; cursor:pointer; color:var(--ink); }
   .lg-btn.on{ background:var(--pack); }
   .lg-btn:focus-visible{ outline:4px solid var(--blue); outline-offset:2px; }
   .lg-grad{ display:inline-flex; align-items:center; gap:8px; }
@@ -151,7 +151,9 @@
   #map-range{ font-weight:800; }
 
   
-  .foot{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:var(--gap); font-size:.92rem; }
+  .foot{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:var(--gap); font-size:.92rem; }
+  .foot .author{ text-align:right; }
+  @media (max-width:860px){ .foot .author{ text-align:left; } }
   .foot h4{ margin:0 0 4px; font-weight:900; font-size:1rem; text-transform:uppercase; font-stretch:75%; }
   .foot p{ margin:0 0 .5em; }
   @media (max-width:860px){ .foot{ grid-template-columns:1fr; } }
@@ -185,7 +187,7 @@
   <div class="ch-head">
     <span class="tag stamp">Ch 1</span>
     <h2 class="ch-title">Eight shelves, 246 products</h2>
-    <p class="lede">Every square is one real product, sorted from most stars (top left) to fewest. Pink is few stars, blue is many.</p>
+    <p class="lede">Every square is one real product, sorted from most stars (top left) to fewest. Each colour is a star band: pink is the fewest stars, blue the most.</p>
     <div class="ch-stat"><div class="sticker">🛒</div><div><b>246</b><span>products across 8 shelves</span></div></div>
   </div>
   <div class="panel">
@@ -208,7 +210,7 @@
       <span class="kind stamp">What it shows</span>
       <h3>Half-star products carry a median 38 g of sugar per 100 g</h3>
       <p>From 3 stars up it is about <b>1 g</b>. Correlation between stars and sugar: <b>−0.47</b>.</p>
-      <p>Each dot is one product, nudged sideways so they don't stack. Black bars are the median at each star level. The axis is logarithmic, so equal steps up mean "times more", not "more grams".</p>
+      <p>Each dot is one product, nudged sideways so they don't stack, and coloured by its star band. The axis is logarithmic, so equal steps up mean "times more", not "more grams".</p>
       <div class="sticker">🍭</div>
     </aside>
   </div>
@@ -234,14 +236,14 @@
   </div>
   <div class="row two">
     <div class="panel">
-      <div class="panel-head"><span class="kind stamp">Jitter plot, log scale</span><h3>Salty products land everywhere on the scale</h3></div>
+      <div class="panel-head"><span class="kind stamp">100% stacked bar</span><h3>Only 2% of high-salt products reach 4.5 stars or more</h3></div>
       <div class="chart" id="v-sodium"></div>
-      <p class="note">Correlation with stars: <b>−0.28</b>. The axis is logarithmic so the two extreme products (4,360 and 5,070 mg per 100 g) fit on the same chart as the rest.</p>
+      <p class="note">Each bar splits one salt band into star bands. In the low-salt band <b>32%</b> of products reach 4.5 stars or more. Correlation with stars: <b>−0.28</b>.</p>
     </div>
     <div class="panel">
-      <div class="panel-head"><span class="kind stamp">Jitter plot</span><h3>More protein helps, but only a little</h3></div>
+      <div class="panel-head"><span class="kind stamp">100% stacked bar</span><h3>Two in three high-protein products score 3.5 stars or more</h3></div>
       <div class="chart" id="v-protein"></div>
-      <p class="note">Correlation with stars: <b>+0.24</b>. The most protein-dense product in the sample has 41 g per 100 g.</p>
+      <p class="note">65% of products with 10 g or more protein reach 3.5 stars, against 42% of those under 5 g. Correlation with stars: <b>+0.24</b>.</p>
     </div>
   </div>
   <div class="legend js-legend" data-kind="shapes"></div>
@@ -317,14 +319,13 @@
       <h4>Data</h4>
       <p>Products: OpenHSR dataset, 246 packaged foods with nutrients per 100 g and a Health Star Rating.</p>
       <p>Health survey: Australian Bureau of Statistics, National Health Survey: State and territory findings, 2022.</p>
+      <p>Not every product lists ingredients or allergens, so Chapter 4 uses smaller samples. Shelf groups are my own grouping.</p>
     </div>
-    <div>
-      <h4>May contain gaps</h4>
-      <p>Not every product lists ingredients or allergens, so Chapter 4 uses smaller samples. One product has no category code. Shelf groups are my own grouping.</p>
-    </div>
-    <div>
-      <h4>Built with</h4>
-      <p>Vega-Lite 5 and vega-embed. State boundaries are simplified from ABS state and territory outlines. Type: Archivo and DotGothic16.</p>
+    <div class="author">
+      <h4>Author</h4>
+      <p>Selena</p>
+      <p>FIT3179 Data Visualisation 2, Monash University, Semester 2 2026.</p>
+      <p>Built with Vega-Lite 5 and vega-embed. State boundaries simplified from ABS outlines.</p>
     </div>
   </div>
 </footer>
@@ -417,13 +418,9 @@
   }
 
   const GROUPS = ['Meat & eggs','Frozen & ready','Cereals & grains','Snacks & sweets','Drinks','Dairy','Bakery','Pantry & canned'];
-  const SHAPE_SVG = {
-    circle:'<circle cx="7" cy="7" r="5"/>', square:'<rect x="2" y="2" width="10" height="10"/>',
-    diamond:'<polygon points="7,1 13,7 7,13 1,7"/>', up:'<polygon points="7,1 13,12 1,12"/>',
-    down:'<polygon points="1,2 13,2 7,13"/>', cross:'<path d="M5 1h4v4h4v4h-4v4h-4v-4h-4v-4h4z"/>',
-    right:'<polygon points="2,1 13,7 2,13"/>', left:'<polygon points="12,1 1,7 12,13"/>' };
-  const SHAPE_ORDER = ['circle','square','diamond','up','down','cross','right','left'];
-  const STAR_GRAD = 'linear-gradient(90deg,#E0245E,#F08BA9,#D9D9D0,#8E9AE8,#2338D6)';
+  const STAR_BANDS = [['0.5–1','#E0245E'],['1.5–2','#F77F00'],['2.5–3','#FCBF49'],['3.5–4','#2A9D8F'],['4.5–5','#2338D6']];
+  const STAR_KEY = title => `<span class="lg-key"><span class="lg-title">${title}</span>` +
+    STAR_BANDS.map(([b,c]) => `<i style="background:${c}"></i>${b}`).join('') + `</span>`;
   const JITTER_IDS = ['#v-sugar','#v-sodium','#v-protein'];
   let activeGroup = '';
 
@@ -437,11 +434,11 @@
       const kind = el.dataset.kind;
       if (kind === 'shapes'){
         el.innerHTML = `<span class="lg-title">Shelf (click to isolate)</span><span class="lg-shapes">` +
-          GROUPS.map((g,i) => `<button class="lg-btn" data-g="${g}"><svg width="14" height="14" viewBox="0 0 14 14" fill="#D9D9D0" stroke="#111" stroke-width="1.3">${SHAPE_SVG[SHAPE_ORDER[i]]}</svg>${g}</button>`).join('') +
-          `</span><span class="lg-grad"><span class="lg-title">Stars</span>0.5<i style="background:${STAR_GRAD}"></i>5.0</span>`;
+          GROUPS.map(g => `<button class="lg-btn" data-g="${g}">${g}</button>`).join('') +
+          `</span>` + STAR_KEY('Stars');
         el.querySelectorAll('.lg-btn').forEach(b => b.addEventListener('click', () => setGroup(b.dataset.g)));
       } else if (kind === 'stars-allergen'){
-        el.innerHTML = `<span class="lg-grad"><span class="lg-title">Stars (strip plot)</span>0.5<i style="background:${STAR_GRAD}"></i>5.0</span>` +
+        el.innerHTML = STAR_KEY('Stars (strip plot)') +
           `<span class="lg-key"><span class="lg-title">Allergen bars</span><i style="background:#E0245E"></i>named as contained<i style="background:#fff"></i>may contain</span>`;
       } else if (kind === 'map'){
         el.innerHTML = `<span class="lg-grad"><span class="lg-title">% of adults (choropleth, tiles)</span><span id="lg-lo">0</span><i style="background:linear-gradient(90deg,#FFE3EA,#8B1038)"></i><span id="lg-hi">0</span></span>` +

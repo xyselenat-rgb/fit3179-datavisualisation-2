@@ -12,16 +12,8 @@
    "as": "group"
   },
   {
-   "window": [
-    {
-     "op": "row_number",
-     "as": "rn"
-    }
-   ]
-  },
-  {
-   "calculate": "(abs(sin(datum.rn * 12.9898) * 43758.5453) % 1) - 0.5",
-   "as": "jit"
+   "calculate": "datum.HSR <= 1 ? '0.5–1 ★' : datum.HSR <= 2 ? '1.5–2 ★' : datum.HSR <= 3 ? '2.5–3 ★' : datum.HSR <= 4 ? '3.5–4 ★' : '4.5–5 ★'",
+   "as": "band"
   },
   {
    "joinaggregate": [
@@ -126,37 +118,33 @@
     }
    },
    "color": {
-    "field": "HSR",
-    "type": "quantitative",
+    "field": "band",
+    "type": "ordinal",
+    "title": "Health Star Rating",
     "scale": {
-     "type": "linear",
      "domain": [
-      0.5,
-      1.625,
-      2.75,
-      3.875,
-      5
+      "0.5–1 ★",
+      "1.5–2 ★",
+      "2.5–3 ★",
+      "3.5–4 ★",
+      "4.5–5 ★"
      ],
      "range": [
       "#E0245E",
-      "#F08BA9",
-      "#D9D9D0",
-      "#8E9AE8",
+      "#F77F00",
+      "#FCBF49",
+      "#2A9D8F",
       "#2338D6"
-     ],
-     "interpolate": "lab",
-     "clamp": true
+     ]
     },
     "legend": {
      "title": "Health Star Rating",
      "orient": "top",
-     "gradientLength": 240,
-     "values": [
-      0.5,
-      2.5,
-      5
-     ],
-     "format": ".1f"
+     "direction": "horizontal",
+     "symbolType": "square",
+     "symbolSize": 180,
+     "symbolStrokeColor": "#111111",
+     "symbolStrokeWidth": 1
     }
    },
    "tooltip": [
@@ -167,6 +155,10 @@
     {
      "field": "group",
      "title": "Group"
+    },
+    {
+     "field": "band",
+     "title": "Star band"
     },
     {
      "field": "HSR",

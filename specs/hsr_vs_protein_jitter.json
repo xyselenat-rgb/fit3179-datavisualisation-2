@@ -11,23 +11,41 @@
    "as": "group"
   },
   {
-   "window": [
-    {
-     "op": "row_number",
-     "as": "rn"
-    }
-   ]
-  },
-  {
-   "calculate": "(abs(sin(datum.rn * 12.9898) * 43758.5453) % 1) - 0.5",
-   "as": "jit"
+   "calculate": "datum.HSR <= 1 ? '0.5–1 ★' : datum.HSR <= 2 ? '1.5–2 ★' : datum.HSR <= 3 ? '2.5–3 ★' : datum.HSR <= 4 ? '3.5–4 ★' : '4.5–5 ★'",
+   "as": "band"
   },
   {
    "filter": "isValid(datum.protein_g_per_100g)"
+  },
+  {
+   "filter": "grp === '' || datum.group === grp"
+  },
+  {
+   "calculate": "datum.protein_g_per_100g < 5 ? 'Low: under 5 g' : datum.protein_g_per_100g < 10 ? 'Medium: 5–10 g' : 'High: 10 g or more'",
+   "as": "nb"
+  },
+  {
+   "joinaggregate": [
+    {
+     "op": "count",
+     "as": "n"
+    }
+   ],
+   "groupby": [
+    "nb"
+   ]
+  },
+  {
+   "calculate": "datum.nb + ' (' + datum.n + ')'",
+   "as": "nlabel"
+  },
+  {
+   "calculate": "indexof([\"Low: under 5 g\", \"Medium: 5–10 g\", \"High: 10 g or more\"], datum.nb)",
+   "as": "nbo"
   }
  ],
  "width": "container",
- "height": 360,
+ "height": 240,
  "autosize": {
   "type": "fit-x",
   "contains": "padding"
@@ -36,169 +54,6 @@
   {
    "name": "grp",
    "value": ""
-  }
- ],
- "layer": [
-  {
-   "mark": {
-    "type": "point",
-    "filled": true,
-    "stroke": "#111111",
-    "strokeWidth": 1,
-    "size": 70
-   },
-   "encoding": {
-    "x": {
-     "field": "HSR",
-     "type": "ordinal",
-     "title": "Health Star Rating (stars)",
-     "axis": {
-      "labelAngle": 0
-     }
-    },
-    "xOffset": {
-     "field": "jit",
-     "type": "quantitative",
-     "scale": {
-      "domain": [
-       -0.5,
-       0.5
-      ]
-     }
-    },
-    "y": {
-     "field": "protein_g_per_100g",
-     "type": "quantitative",
-     "title": "Protein (g per 100 g)",
-     "scale": {
-      "domain": [
-       0,
-       42
-      ],
-      "nice": false,
-      "clamp": true
-     }
-    },
-    "color": {
-     "field": "HSR",
-     "type": "quantitative",
-     "scale": {
-      "type": "linear",
-      "domain": [
-       0.5,
-       1.625,
-       2.75,
-       3.875,
-       5
-      ],
-      "range": [
-       "#E0245E",
-       "#F08BA9",
-       "#D9D9D0",
-       "#8E9AE8",
-       "#2338D6"
-      ],
-      "interpolate": "lab",
-      "clamp": true
-     },
-     "legend": null
-    },
-    "shape": {
-     "field": "group",
-     "type": "nominal",
-     "scale": {
-      "domain": [
-       "Meat & eggs",
-       "Frozen & ready",
-       "Cereals & grains",
-       "Snacks & sweets",
-       "Drinks",
-       "Dairy",
-       "Bakery",
-       "Pantry & canned"
-      ],
-      "range": [
-       "circle",
-       "square",
-       "diamond",
-       "triangle-up",
-       "triangle-down",
-       "cross",
-       "triangle-right",
-       "triangle-left"
-      ]
-     },
-     "legend": null
-    },
-    "opacity": {
-     "condition": {
-      "test": "grp === '' || datum.group === grp",
-      "value": 0.95
-     },
-     "value": 0.12
-    },
-    "tooltip": [
-     {
-      "field": "product_name",
-      "title": "Product"
-     },
-     {
-      "field": "group",
-      "title": "Group"
-     },
-     {
-      "field": "HSR",
-      "title": "Stars"
-     },
-     {
-      "field": "protein_g_per_100g",
-      "title": "Protein g/100 g"
-     }
-    ]
-   }
-  },
-  {
-   "transform": [
-    {
-     "aggregate": [
-      {
-       "op": "median",
-       "field": "protein_g_per_100g",
-       "as": "m"
-      }
-     ],
-     "groupby": [
-      "HSR"
-     ]
-    }
-   ],
-   "mark": {
-    "type": "tick",
-    "color": "#111111",
-    "thickness": 4,
-    "width": 26
-   },
-   "encoding": {
-    "x": {
-     "field": "HSR",
-     "type": "ordinal"
-    },
-    "y": {
-     "field": "m",
-     "type": "quantitative"
-    },
-    "tooltip": [
-     {
-      "field": "HSR",
-      "title": "Stars"
-     },
-     {
-      "field": "m",
-      "title": "Median",
-      "format": ".1f"
-     }
-    ]
-   }
   }
  ],
  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
@@ -246,5 +101,78 @@
   "right": 18,
   "top": 6,
   "bottom": 4
+ },
+ "mark": {
+  "type": "bar",
+  "stroke": "#111111",
+  "strokeWidth": 1.5
+ },
+ "encoding": {
+  "y": {
+   "field": "nlabel",
+   "type": "nominal",
+   "title": "Protein per 100 g",
+   "sort": {
+    "field": "nbo",
+    "op": "min",
+    "order": "ascending"
+   },
+   "axis": {
+    "labelFontWeight": 700,
+    "labelLimit": 200
+   }
+  },
+  "x": {
+   "aggregate": "count",
+   "type": "quantitative",
+   "stack": "normalize",
+   "title": "Share of products in the band",
+   "axis": {
+    "format": "%",
+    "values": [
+     0,
+     0.25,
+     0.5,
+     0.75,
+     1
+    ]
+   }
+  },
+  "color": {
+   "field": "band",
+   "type": "ordinal",
+   "title": "Health Star Rating",
+   "scale": {
+    "domain": [
+     "0.5–1 ★",
+     "1.5–2 ★",
+     "2.5–3 ★",
+     "3.5–4 ★",
+     "4.5–5 ★"
+    ],
+    "range": [
+     "#E0245E",
+     "#F77F00",
+     "#FCBF49",
+     "#2A9D8F",
+     "#2338D6"
+    ]
+   },
+   "legend": null
+  },
+  "tooltip": [
+   {
+    "field": "nb",
+    "title": "Band"
+   },
+   {
+    "field": "band",
+    "title": "Stars"
+   },
+   {
+    "aggregate": "count",
+    "title": "Products"
+   }
+  ]
  }
 }

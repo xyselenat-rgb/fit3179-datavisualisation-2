@@ -11,18 +11,6 @@
    "as": "group"
   },
   {
-   "window": [
-    {
-     "op": "row_number",
-     "as": "rn"
-    }
-   ]
-  },
-  {
-   "calculate": "(abs(sin(datum.rn * 12.9898) * 43758.5453) % 1) - 0.5",
-   "as": "jit"
-  },
-  {
    "aggregate": [
     {
      "op": "mean",
@@ -87,10 +75,11 @@
   {
    "mark": {
     "type": "circle",
-    "size": 520,
+    "size": 220,
     "stroke": "#111111",
-    "strokeWidth": 3,
-    "opacity": 1
+    "strokeWidth": 2,
+    "opacity": 1,
+    "fill": "#2338D6"
    },
    "encoding": {
     "y": {
@@ -123,30 +112,6 @@
       ]
      }
     },
-    "color": {
-     "field": "avg",
-     "type": "quantitative",
-     "scale": {
-      "type": "linear",
-      "domain": [
-       0.5,
-       1.625,
-       2.75,
-       3.875,
-       5
-      ],
-      "range": [
-       "#E0245E",
-       "#F08BA9",
-       "#D9D9D0",
-       "#8E9AE8",
-       "#2338D6"
-      ],
-      "interpolate": "lab",
-      "clamp": true
-     },
-     "legend": null
-    },
     "tooltip": [
      {
       "field": "group",
@@ -169,8 +134,10 @@
     "type": "text",
     "font": "Archivo",
     "fontWeight": 800,
-    "fontSize": 11,
-    "color": "#111111"
+    "fontSize": 13,
+    "color": "#111111",
+    "align": "left",
+    "dx": 13
    },
    "encoding": {
     "y": {
