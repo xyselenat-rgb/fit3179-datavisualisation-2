@@ -81,7 +81,10 @@
    "field": "products",
    "type": "quantitative",
    "title": "Products (of those with an allergen entry)",
-   "stack": "zero"
+   "stack": "zero",
+   "axis": {
+    "tickCount": 5
+   }
   },
   "color": {
    "field": "status",
@@ -93,7 +96,7 @@
      "Listed as may contain"
     ],
     "range": [
-     "#E0245E",
+     "#8C7BEA",
      "#FFFFFF"
     ]
    },

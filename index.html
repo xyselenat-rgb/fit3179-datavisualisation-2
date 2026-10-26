@@ -87,7 +87,7 @@
   .lede{ grid-column:2; margin:0; max-width:60ch; font-size:1.08rem; font-weight:500; }
   .ch-stat{ grid-column:3; grid-row:1 / span 2; display:flex; align-items:center; gap:14px; border-left:4px solid var(--ink); padding-left:clamp(12px,2vw,24px); align-self:stretch; }
   .ch-stat .sticker{ width:68px; height:68px; font-size:2rem; flex:none; }
-  .ch-stat b{ display:block; font-size:clamp(2.2rem,4.4vw,3.6rem); font-stretch:62%; font-weight:900; line-height:.9; }
+  .ch-stat b{ display:block; font-size:clamp(2.2rem,4.4vw,3.6rem); font-stretch:62%; font-weight:900; line-height:1; margin-bottom:4px; white-space:nowrap; }
   .ch-stat span{ display:block; font-weight:700; font-size:.85rem; max-width:14ch; line-height:1.15; }
   @media (max-width:760px){
     .ch-head{ grid-template-columns:auto minmax(0,1fr); }
@@ -135,9 +135,10 @@
   .lg-btn{ display:inline-flex; align-items:center; gap:6px; border:2px solid var(--ink); background:var(--paper); padding:4px 10px; font:inherit; font-weight:700; font-size:.85rem; cursor:pointer; color:var(--ink); }
   .lg-btn.on{ background:var(--pack); }
   .lg-btn:focus-visible{ outline:4px solid var(--blue); outline-offset:2px; }
-  .lg-grad{ display:inline-flex; align-items:center; gap:8px; }
-  .lg-grad i{ display:block; width:min(220px,40vw); height:14px; border:2px solid var(--ink); }
-  .lg-key{ display:inline-flex; align-items:center; gap:6px; }
+  .lg-grad{ display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px; }
+  .lg-grad i{ display:block; width:min(220px,36vw); height:14px; border:2px solid var(--ink); }
+  .lg-key{ display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px 10px; }
+  .lg-sw{ display:inline-flex; align-items:center; gap:5px; white-space:nowrap; }
   .lg-key i{ display:block; width:18px; height:14px; border:2px solid var(--ink); }
 
   
@@ -156,6 +157,8 @@
   @media (max-width:860px){ .foot .author{ text-align:left; } }
   .foot h4{ margin:0 0 4px; font-weight:900; font-size:1rem; text-transform:uppercase; font-stretch:75%; }
   .foot p{ margin:0 0 .5em; }
+  .foot a{ color:var(--ink); font-weight:700; text-decoration:underline; text-underline-offset:2px; }
+  .foot a:hover{ color:var(--blue); }
   @media (max-width:860px){ .foot{ grid-template-columns:1fr; } }
   @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } }
 </style>
@@ -187,30 +190,29 @@
   <div class="ch-head">
     <span class="tag stamp">Ch 1</span>
     <h2 class="ch-title">Eight shelves, 246 products</h2>
-    <p class="lede">Every square is one real product, sorted from most stars (top left) to fewest. Each colour is a star band: pink is the fewest stars, blue the most.</p>
+    <p class="lede">Every square is a real product. Cereals, frozen meals and meat lean blue; snacks &amp; sweets are almost all pink.</p>
     <div class="ch-stat"><div class="sticker">🛒</div><div><b>246</b><span>products across 8 shelves</span></div></div>
   </div>
   <div class="panel">
-    <div class="panel-head"><span class="kind stamp">Waffle chart</span><h3>Pantry &amp; canned is the biggest shelf, Bakery the smallest</h3></div>
+    <div class="panel-head"><h3>Pantry &amp; canned is the biggest shelf, Bakery the smallest</h3></div>
     <div class="chart" id="v-waffle"></div>
-    <p class="note">The shelf names are my own tidy-up of the dataset's <i>Product type</i> column, which mixes spellings ("Bakery", "bakery") and one-off labels. Anything unclear goes to Pantry &amp; canned.</p>
   </div>
+  <div class="legend js-legend" data-kind="stars"></div>
 </section>
 
 <section class="block" id="sugar">
   <div class="ch-head">
     <span class="tag stamp">Ch 2</span>
     <h2 class="ch-title">Stars follow the sugar</h2>
-    <p class="lede">The star rating is a score out of five. Plot it against sugar and the pattern is hard to miss.</p>
+    <p class="lede">The Health Star Rating scores a product from half a star to five. The sweeter the product, the fewer stars it gets.</p>
     <div class="ch-stat"><div class="sticker">🍬</div><div><b>38 g</b><span>median sugar at half a star</span></div></div>
   </div>
   <div class="row chart-text">
-    <div class="chartbox"><span class="kind stamp">Jitter plot, log scale</span><div class="chart" id="v-sugar"></div></div>
+    <div class="chartbox"><div class="chart" id="v-sugar"></div></div>
     <aside class="story">
       <span class="kind stamp">What it shows</span>
       <h3>Half-star products carry a median 38 g of sugar per 100 g</h3>
-      <p>From 3 stars up it is about <b>1 g</b>. Correlation between stars and sugar: <b>−0.47</b>.</p>
-      <p>Each dot is one product, nudged sideways so they don't stack, and coloured by its star band. The axis is logarithmic, so equal steps up mean "times more", not "more grams".</p>
+      <p>From 3 stars up, the median is just <b>1.4 g</b>. Correlation between stars and sugar: <b>−0.47</b>.</p>
       <div class="sticker">🍭</div>
     </aside>
   </div>
@@ -218,11 +220,10 @@
     <aside class="story">
       <span class="kind stamp">What it shows</span>
       <h3>Some shelves start behind</h3>
-      <p>Snacks &amp; sweets average <b>1.0</b> star. Cereals &amp; grains average <b>3.5</b>.</p>
-      <p>Average stars per shelf, with the number of products in brackets.</p>
+      <p>Snacks &amp; sweets average <b>1.0</b> star. Cereals &amp; grains average <b>3.5</b>, more than three times as many.</p>
       <div class="sticker">🥣</div>
     </aside>
-    <div class="chartbox"><span class="kind stamp">Lollipop chart</span><div class="chart" id="v-lolly"></div></div>
+    <div class="chartbox"><div class="chart" id="v-lolly"></div></div>
   </div>
   <div class="legend js-legend" data-kind="shapes"></div>
 </section>
@@ -236,14 +237,14 @@
   </div>
   <div class="row two">
     <div class="panel">
-      <div class="panel-head"><span class="kind stamp">100% stacked bar</span><h3>Only 2% of high-salt products reach 4.5 stars or more</h3></div>
+      <div class="panel-head"><h3>Only 2% of high-salt products reach 4.5 stars or more</h3></div>
       <div class="chart" id="v-sodium"></div>
-      <p class="note">Each bar splits one salt band into star bands. In the low-salt band <b>32%</b> of products reach 4.5 stars or more. Correlation with stars: <b>−0.28</b>.</p>
+      <p class="note">In the low-salt band <b>32%</b> of products reach 4.5 stars or more. Correlation with stars: <b>−0.28</b>.</p>
     </div>
     <div class="panel">
-      <div class="panel-head"><span class="kind stamp">100% stacked bar</span><h3>Two in three high-protein products score 3.5 stars or more</h3></div>
+      <div class="panel-head"><h3>Two in three high-protein products score 3.5 stars or more</h3></div>
       <div class="chart" id="v-protein"></div>
-      <p class="note">65% of products with 10 g or more protein reach 3.5 stars, against 42% of those under 5 g. Correlation with stars: <b>+0.24</b>.</p>
+      <p class="note"><b>65%</b> of products with 10 g or more protein reach 3.5 stars, against <b>42%</b> of those under 5 g. Correlation with stars: <b>+0.24</b>.</p>
     </div>
   </div>
   <div class="legend js-legend" data-kind="shapes"></div>
@@ -257,12 +258,12 @@
     <div class="ch-stat"><div class="sticker">🥜</div><div><b>55</b><span>items on the longest ingredient list</span></div></div>
   </div>
   <div class="row chart-text">
-    <div class="chartbox"><span class="kind stamp">Strip plot, log scale</span><div class="chart" id="v-ingredients"></div></div>
+    <div class="chartbox"><div class="chart" id="v-ingredients"></div></div>
     <aside class="story">
       <span class="kind stamp">What it shows</span>
       <h3>Snacks and pantry foods carry the longest ingredient lists</h3>
       <p>Median list length is <b>13</b> items for Snacks &amp; sweets and Pantry &amp; canned, <b>3</b> for Dairy.</p>
-      <p>Items are counted by splitting at commas, ignoring brackets, on a logarithmic axis. Only 112 products have an ingredients list, and none of the Frozen &amp; ready or Bakery products do.</p>
+      <p>None of the Frozen &amp; ready or Bakery products in the data list their ingredients.</p>
       <div class="sticker">📝</div>
     </aside>
   </div>
@@ -271,10 +272,9 @@
       <span class="kind stamp">What it shows</span>
       <h3>Gluten and milk are the allergens you meet most</h3>
       <p>Each is named in <b>45</b> of the <b>79</b> products with an allergen entry.</p>
-      <p>Allergen text is matched by keyword, so unusual wording can be missed.</p>
       <div class="sticker">🥛</div>
     </aside>
-    <div class="chartbox"><span class="kind stamp">Bar chart</span><div class="chart" id="v-allergens"></div></div>
+    <div class="chartbox"><div class="chart" id="v-allergens"></div></div>
   </div>
   <div class="legend js-legend" data-kind="stars-allergen"></div>
 </section>
@@ -283,8 +283,8 @@
   <div class="ch-head">
     <span class="tag stamp">Ch 5</span>
     <h2 class="ch-title">Where Australians stand</h2>
-    <p class="lede">The ABS surveyed adults in every state and territory. Pick a measure and compare how three map types show the same eight numbers.</p>
-    <div class="ch-stat"><div class="sticker">🗺️</div><div><b>8</b><span>states and territories, 3 map types</span></div></div>
+    <p class="lede">About two in three adults are overweight or obese in every state and territory. Tasmania is highest, NSW lowest. Pick another measure to see how the states compare.</p>
+    <div class="ch-stat"><div class="sticker">🗺️</div><div><b>65.8%</b><span>of Australian adults are overweight or obese</span></div></div>
   </div>
   <div class="picker">
     <label for="measure">Measure</label>
@@ -293,19 +293,16 @@
   </div>
   <div class="row three">
     <div class="panel">
-      <div class="panel-head"><span class="kind stamp">Choropleth</span><h3>Colour shows the level</h3></div>
+      <div class="panel-head"><h3 class="map-h">&nbsp;</h3></div>
       <div class="chart" id="v-choro"></div>
-      <p class="note">Large states dominate the eye. The ACT is too small to see.</p>
     </div>
     <div class="panel">
-      <div class="panel-head"><span class="kind stamp">Proportional symbol</span><h3>Circle area shows the level</h3></div>
+      <div class="panel-head"><h3 class="map-h">&nbsp;</h3></div>
       <div class="chart" id="v-prop"></div>
-      <p class="note">Circle area runs from zero, so states with similar rates look alike. The number inside each circle is the rate.</p>
     </div>
     <div class="panel">
-      <div class="panel-head"><span class="kind stamp">Tile grid map</span><h3>Every state gets equal space</h3></div>
+      <div class="panel-head"><h3 class="map-h">&nbsp;</h3></div>
       <div class="chart" id="v-tiles"></div>
-      <p class="note">Squares sit roughly where the states do. The ACT counts as much as Queensland.</p>
     </div>
   </div>
   <div class="legend js-legend" data-kind="map"></div>
@@ -317,8 +314,8 @@
   <div class="foot">
     <div>
       <h4>Data</h4>
-      <p>Products: OpenHSR dataset, 246 packaged foods with nutrients per 100 g and a Health Star Rating.</p>
-      <p>Health survey: Australian Bureau of Statistics, National Health Survey: State and territory findings, 2022.</p>
+      <p>Products: <a href="https://zenodo.org/records/17469191" target="_blank" rel="noopener">OpenHSR dataset (Zenodo)</a>, 246 packaged foods with nutrients per 100 g and a Health Star Rating.</p>
+      <p>Health survey: Australian Bureau of Statistics, <a href="https://www.abs.gov.au/statistics/health/health-conditions-and-risks/national-health-survey-state-and-territory-findings/2022" target="_blank" rel="noopener">National Health Survey: State and territory findings, 2022</a>.</p>
       <p>Not every product lists ingredients or allergens, so Chapter 4 uses smaller samples. Shelf groups are my own grouping.</p>
     </div>
     <div class="author">
@@ -336,7 +333,11 @@
   const $ = s => document.querySelector(s);
   const SPEC = n => `specs/${n}.json`;
   const V = {};
-  const embed = async (id, spec) => { const r = await vegaEmbed(id, spec, { actions:false, renderer:'svg' }); V[id] = r.view; return r; };
+  const embed = async (id, spec) => {
+    const r = await vegaEmbed(id, spec, { actions:false, renderer:'svg' });
+    V[id] = r.view;
+    return r;
+  };
   const getSpec = async n => (await fetch(SPEC(n))).json();
   const mean = a => a.reduce((s,v)=>s+v,0) / a.length;
 
@@ -364,8 +365,9 @@
     if (cols === waffleCols) return;
     waffleCols = cols;
     const spec = await getSpec('trolley_overview_waffle');
-    const cell = Math.max(Math.floor((w - (cols - 1) * 14) / cols) - 8, 120);
+    const cell = Math.max(Math.floor((w - 22 - (cols - 1) * 14) / cols), 120);
     spec.columns = cols;
+    spec.spacing = 14;
     spec.spec.width = cell;
     spec.spec.height = cell * 4 / 15;
     await embed('#v-waffle', spec);
@@ -376,14 +378,21 @@
     const cells = l => [...l.matchAll(/"([^"]*)"/g)].map(m => m[1]);
     const head = cells(lines.find(l => l.startsWith(',')));
     const fix = { Vic:'VIC', Qld:'QLD', Tas:'TAS' };
-    const table = {};
-    lines.forEach(l => { const c = cells(l); if (c.length === head.length + 1)
-      table[c[0]] = c.slice(1).map((v,i) => ({ code:(fix[head[i]]||head[i]).toUpperCase(), state:head[i], value:+v })).filter(r => r.state !== 'Australia'); });
-    return table;
+    const table = {}, national = {};
+    lines.forEach(l => {
+      const c = cells(l);
+      if (c.length === head.length + 1){
+        national[c[0]] = +c[1 + head.indexOf('Australia')];
+        table[c[0]] = c.slice(1)
+          .map((v,i) => ({ code:(fix[head[i]]||head[i]).toUpperCase(), state:head[i], value:+v }))
+          .filter(r => r.state !== 'Australia');
+      }
+    });
+    return { table, national };
   }
 
   async function maps(){
-    const table = await abs();
+    const { table, national } = await abs();
     const names = Object.keys(table), sel = $('#measure');
     sel.innerHTML = names.map(n => `<option>${n}</option>`).join('');
     sel.value = names.find(n => n.includes('Body Mass')) || names[0];
@@ -399,7 +408,11 @@
       const hi = rows.reduce((a,b) => b.value > a.value ? b : a), lo = rows.reduce((a,b) => b.value < a.value ? b : a);
       const lo2 = Math.min(...rows.map(r => r.value)), hi2 = Math.max(...rows.map(r => r.value));
       $('#lg-lo').textContent = lo2.toFixed(0) + '%'; $('#lg-hi').textContent = hi2.toFixed(0) + '%';
-      $('#map-range').textContent = `Highest: ${hi.state} (${hi.value}%). Lowest: ${lo.state} (${lo.value}%).`;
+      $('#map-range').textContent = `Australia overall: ${national[sel.value]}% of adults`;
+      const [h1, h2, h3] = document.querySelectorAll('.map-h');
+      h1.textContent = `Highest: ${hi.state}, ${hi.value}%`;
+      h2.textContent = `Lowest: ${lo.state}, ${lo.value}%`;
+      h3.textContent = `Gap between states: ${(hi.value - lo.value).toFixed(1)} points`;
     };
     sel.addEventListener('change', update);
     update();
@@ -420,8 +433,8 @@
   const GROUPS = ['Meat & eggs','Frozen & ready','Cereals & grains','Snacks & sweets','Drinks','Dairy','Bakery','Pantry & canned'];
   const STAR_BANDS = [['0.5–1','#E0245E'],['1.5–2','#F77F00'],['2.5–3','#FCBF49'],['3.5–4','#2A9D8F'],['4.5–5','#2338D6']];
   const STAR_KEY = title => `<span class="lg-key"><span class="lg-title">${title}</span>` +
-    STAR_BANDS.map(([b,c]) => `<i style="background:${c}"></i>${b}`).join('') + `</span>`;
-  const JITTER_IDS = ['#v-sugar','#v-sodium','#v-protein'];
+    STAR_BANDS.map(([b,c]) => `<span class="lg-sw"><i style="background:${c}"></i>${b}</span>`).join('') + `</span>`;
+  const JITTER_IDS = ['#v-sugar','#v-lolly','#v-sodium','#v-protein'];
   let activeGroup = '';
 
   function setGroup(g){
@@ -429,17 +442,20 @@
     JITTER_IDS.forEach(id => V[id] && V[id].signal('grp', activeGroup).run());
     document.querySelectorAll('.lg-btn').forEach(b => b.classList.toggle('on', b.dataset.g === activeGroup));
   }
+
   function buildLegends(){
     document.querySelectorAll('.js-legend').forEach(el => {
       const kind = el.dataset.kind;
-      if (kind === 'shapes'){
+      if (kind === 'stars'){
+        el.innerHTML = STAR_KEY('Health stars');
+      } else if (kind === 'shapes'){
         el.innerHTML = `<span class="lg-title">Shelf (click to isolate)</span><span class="lg-shapes">` +
           GROUPS.map(g => `<button class="lg-btn" data-g="${g}">${g}</button>`).join('') +
-          `</span>` + STAR_KEY('Stars');
+          `</span>` + STAR_KEY('Health stars');
         el.querySelectorAll('.lg-btn').forEach(b => b.addEventListener('click', () => setGroup(b.dataset.g)));
       } else if (kind === 'stars-allergen'){
-        el.innerHTML = STAR_KEY('Stars (strip plot)') +
-          `<span class="lg-key"><span class="lg-title">Allergen bars</span><i style="background:#E0245E"></i>named as contained<i style="background:#fff"></i>may contain</span>`;
+        el.innerHTML = STAR_KEY('Health stars (strip plot)') +
+          `<span class="lg-key"><span class="lg-title">Allergen bars</span><span class="lg-sw"><i style="background:#8C7BEA"></i>contains</span><span class="lg-sw"><i style="background:#fff"></i>may contain</span></span>`;
       } else if (kind === 'map'){
         el.innerHTML = `<span class="lg-grad"><span class="lg-title">% of adults (choropleth, tiles)</span><span id="lg-lo">0</span><i style="background:linear-gradient(90deg,#FFE3EA,#8B1038)"></i><span id="lg-hi">0</span></span>` +
           `<span class="lg-key"><span class="lg-title">Circles</span>area = % of adults</span>`;

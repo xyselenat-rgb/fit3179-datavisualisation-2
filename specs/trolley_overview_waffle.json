@@ -137,15 +137,7 @@
       "#2338D6"
      ]
     },
-    "legend": {
-     "title": "Health Star Rating",
-     "orient": "top",
-     "direction": "horizontal",
-     "symbolType": "square",
-     "symbolSize": 180,
-     "symbolStrokeColor": "#111111",
-     "symbolStrokeWidth": 1
-    }
+    "legend": null
    },
    "tooltip": [
     {

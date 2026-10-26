@@ -69,6 +69,13 @@
     },
     "x2": {
      "field": "avg"
+    },
+    "opacity": {
+     "condition": {
+      "test": "grp === '' || datum.group === grp",
+      "value": 1
+     },
+     "value": 0.15
     }
    }
   },
@@ -126,7 +133,14 @@
       "title": "Average stars",
       "format": ".2f"
      }
-    ]
+    ],
+    "opacity": {
+     "condition": {
+      "test": "grp === '' || datum.group === grp",
+      "value": 1
+     },
+     "value": 0.15
+    }
    }
   },
   {
@@ -157,6 +171,13 @@
      "field": "avg",
      "type": "quantitative",
      "format": ".1f"
+    },
+    "opacity": {
+     "condition": {
+      "test": "grp === '' || datum.group === grp",
+      "value": 1
+     },
+     "value": 0.15
     }
    }
   }
@@ -206,5 +227,11 @@
   "right": 18,
   "top": 6,
   "bottom": 4
- }
+ },
+ "params": [
+  {
+   "name": "grp",
+   "value": ""
+  }
+ ]
 }
